@@ -21,7 +21,7 @@ function PvLogo() {
         <span className="text-sm font-bold tracking-tight text-gray-900">
           Price<span className="text-amber-500">vs</span>Value
         </span>
-        <span className="text-xs text-gray-400">מחיר מול שווי</span>
+        <span className="text-xs text-gray-400">מחיר מול שווי <span className="text-amber-500 font-medium">גרסת ביתא</span></span>
       </div>
     </a>
   );
