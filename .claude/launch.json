@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "price-vs-value",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--", "-p", "3001"],
+      "cwd": "C:\\Users\\USER\\Dropbox\\My PC (DESKTOP-CB0TS45)\\Downloads\\price-vs-value",
+      "port": 3001
+    }
+  ]
+}
