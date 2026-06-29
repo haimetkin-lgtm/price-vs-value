@@ -35,8 +35,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between">
             <PvLogo />
             <nav className="flex items-center gap-4 text-xs text-gray-500">
-              <a href="/history" className="hover:text-gray-800 transition-colors">הדוחות שלי</a>
-              <a href="/auth" className="hover:text-gray-800 transition-colors">כניסה</a>
+              <a href="mailto:haimetkin@gmail.com" className="hover:text-gray-800 transition-colors">צור קשר</a>
             </nav>
           </div>
           <div className="bg-amber-50 border-t border-amber-100 text-center py-1.5 px-4 text-xs text-amber-700">
