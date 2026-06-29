@@ -114,7 +114,7 @@ export default function Home() {
   );
 
   const stepRequired: Record<number, { field: keyof AllInputs; label: string }[]> = {
-    0: [{ field: "marketPrice", label: "מחיר הנכס" }],
+    0: [{ field: "marketPrice", label: "מחיר הנכס" }, { field: "purchaseDate", label: "מועד העסקה" }],
     1: [{ field: "yNet", label: "הכנסה חודשית נטו" }, { field: "equity", label: "הון עצמי" }],
     2: [{ field: "rentMonthly", label: "שכר דירה חודשי" }],
     3: [],
