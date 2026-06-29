@@ -13,6 +13,7 @@ export interface AllInputs {
   city: string;
   purpose: "own" | "invest";
   rooms: number;
+  purchaseDate: string;   // YYYY-MM
 
   // Paff
   yNet: number;
