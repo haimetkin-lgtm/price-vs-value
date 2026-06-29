@@ -43,6 +43,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </div>
         </header>
         {children}
+        <footer className="text-center py-4 text-xs text-gray-400 border-t border-gray-100 mt-8">
+          מבוסס על הספר <span className="font-medium text-gray-500">בועת נדל״ן</span> · חיים אטקין, שמאי מקרקעין
+        </footer>
       </body>
     </html>
   );
