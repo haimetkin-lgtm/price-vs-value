@@ -47,6 +47,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           מבוסס על הספר <span className="font-medium text-gray-500">בועת נדל״ן</span>
           <br />
           חיים אטקין, שמאי מקרקעין, אנליסט נדל״ן, מומחה לנדל״ן וחוקר שוק · מייסד ובעלים של <span className="font-medium text-gray-500">בית שמאי</span>, בית הספר לפרקטיקה שמאית
+          <br />
+          © {new Date().getFullYear()} חיים אטקין · כל הזכויות שמורות
         </footer>
       </body>
     </html>
