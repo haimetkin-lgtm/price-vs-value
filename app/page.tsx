@@ -1,5 +1,44 @@
 "use client";
 import { useState } from "react";
+
+const GLOSSARY = [
+  { term: "Paff", full: "Price Affordability", desc: "המחיר המרבי שניתן לממן באופן סביר — מחושב על בסיס ההכנסה החודשית נטו, ההון העצמי, ההתחייבויות הקיימות ותנאי המשכנתא שהוזנו." },
+  { term: "Vrent", full: "Value by Rent", desc: "שווי הנכס לפי השכירות שהוא מניב — מהוון לפי ריבית חסרת סיכון, פרמיית סיכון וצמיחת שכ\"ד. ככל שהמחיר גבוה יותר מ-Vrent, כך תשואת השכירות נמוכה יותר." },
+  { term: "Vcost", full: "Value by Cost", desc: "אינדיקציה לעלות הקמת דירה דומה מאפס — בנייה, קרקע, פיתוח ורווח יזמי. מחיר הגבוה משמעותית מ-Vcost מחייב הסבר כלכלי: מיקום, זכויות, מחסור או איכות." },
+  { term: "PIR", full: "Price-to-Income Ratio", desc: "כמה שנות הכנסה שנתית נדרשות לרכישת דירה. ככל שהיחס גבוה יותר ביחס לעבר ולאזורים דומים — רמת הנגישות נמוכה יותר." },
+  { term: "HAI", full: "Housing Affordability Index", desc: "האם הכנסת משק הבית הממוצע מספיקה לעמוד בתשלומי המשכנתא. מעל 100 = נגיש, מתחת 100 = לא נגיש." },
+  { term: "DSTI", full: "Debt Service-to-Income", desc: "אחוז ההכנסה החודשית המופנה להחזר חובות (משכנתא + הלוואות). בנק ישראל קבע מגבלות לפי מדרגות הכנסה — ככלל אצבע ערך מעל 40% מצביע על עומס חוב גבוה." },
+  { term: "UCH", full: "User Cost of Housing", desc: "העלות השנתית האמיתית של בעלות על הדירה: ריבית, פחת, תחזוקה ומסים — בניכוי עליית ערך צפויה. ניתן להשוות ישירות לשכ\"ד שוק." },
+  { term: "SRI", full: "Systemic Risk Index", desc: "מדד סיכון מערכתי של שוק הנדל\"ן — משלב פער תמחור, עומס חוב משקי בית ואשראי ביחס לתמ\"ג. מוצג כ-Z-score ביחס לסדרה ההיסטורית: ערך גבוה מצביע על חריגה מהממוצע." },
+];
+
+function GlossaryAccordion() {
+  const [open, setOpen] = useState<string | null>(null);
+  return (
+    <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+      <h2 className="text-base font-bold text-gray-900 mb-4">מה המושגים האלה אומרים?</h2>
+      <div className="flex flex-col divide-y divide-gray-100">
+        {GLOSSARY.map(({ term, full, desc }) => (
+          <div key={term}>
+            <button
+              onClick={() => setOpen(open === term ? null : term)}
+              className="w-full flex items-center justify-between py-3 text-right gap-3 hover:bg-gray-50 transition-colors px-1 rounded"
+            >
+              <div className="flex items-center gap-3">
+                <span className="text-sm font-bold text-blue-700 w-12 text-right flex-shrink-0">{term}</span>
+                <span className="text-xs text-gray-500">{full}</span>
+              </div>
+              <span className="text-gray-400 text-xs flex-shrink-0">{open === term ? "▲" : "▼"}</span>
+            </button>
+            {open === term && (
+              <p className="text-xs text-gray-600 leading-relaxed pb-3 px-1 pr-16">{desc}</p>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 import { useRouter } from "next/navigation";
 import { StepIndicator } from "@/components/ui/StepIndicator";
 import { Paywall } from "@/components/Paywall";
@@ -332,63 +371,7 @@ export default function Home() {
 
       {/* מילון מושגים */}
       <div id="glossary" className="w-full max-w-2xl mt-12 mb-8">
-        <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
-          <h2 className="text-base font-bold text-gray-900 mb-5">מה המושגים האלה אומרים?</h2>
-          <div className="flex flex-col gap-4">
-            {[
-              {
-                term: "Paff",
-                full: "Price Affordability",
-                desc: "המחיר המרבי שניתן לממן באופן סביר — מחושב על בסיס ההכנסה החודשית נטו, ההון העצמי, ההתחייבויות הקיימות ותנאי המשכנתא שהוזנו.",
-              },
-              {
-                term: "Vrent",
-                full: "Value by Rent",
-                desc: "שווי הנכס לפי השכירות שהוא מניב — מהוון לפי ריבית חסרת סיכון, פרמיית סיכון וצמיחת שכ\"ד. ככל שהמחיר גבוה יותר מ-Vrent, כך תשואת השכירות נמוכה יותר.",
-              },
-              {
-                term: "Vcost",
-                full: "Value by Cost",
-                desc: "אינדיקציה לעלות הקמת דירה דומה מאפס — בנייה, קרקע, פיתוח ורווח יזמי. מחיר הגבוה משמעותית מ-Vcost מחייב הסבר כלכלי: מיקום, זכויות, מחסור או איכות.",
-              },
-              {
-                term: "PIR",
-                full: "Price-to-Income Ratio",
-                desc: "כמה שנות הכנסה שנתית נדרשות לרכישת דירה. ככל שהיחס גבוה יותר ביחס לעבר ולאזורים דומים — רמת הנגישות נמוכה יותר.",
-              },
-              {
-                term: "HAI",
-                full: "Housing Affordability Index",
-                desc: "האם הכנסת משק הבית הממוצע מספיקה לעמוד בתשלומי המשכנתא. מעל 100 = נגיש, מתחת 100 = לא נגיש.",
-              },
-              {
-                term: "DSTI",
-                full: "Debt Service-to-Income",
-                desc: "אחוז ההכנסה החודשית המופנה להחזר חובות (משכנתא + הלוואות). בנק ישראל קבע מגבלות לפי מדרגות הכנסה — ככלל אצבע ערך מעל 40% מצביע על עומס חוב גבוה.",
-              },
-              {
-                term: "UCH",
-                full: "User Cost of Housing",
-                desc: "העלות השנתית האמיתית של בעלות על הדירה: ריבית, פחת, תחזוקה ומסים — בניכוי עליית ערך צפויה. ניתן להשוות ישירות לשכ\"ד שוק.",
-              },
-              {
-                term: "SRI",
-                full: "Systemic Risk Index",
-                desc: "מדד סיכון מערכתי של שוק הנדל\"ן — משלב פער תמחור, עומס חוב משקי בית ואשראי ביחס לתמ\"ג. מוצג כ-Z-score ביחס לסדרה ההיסטורית: ערך גבוה מצביע על חריגה מהממוצע.",
-              },
-            ].map(({ term, full, desc }) => (
-              <div key={term} className="flex gap-3">
-                <div className="flex-shrink-0 w-16 text-right">
-                  <span className="text-sm font-bold text-blue-700">{term}</span>
-                </div>
-                <div>
-                  <span className="text-xs font-medium text-gray-500">{full}</span>
-                  <p className="text-xs text-gray-600 mt-0.5 leading-relaxed">{desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        <GlossaryAccordion />
       </div>
 
       {/* שירות שמאות לצרכים משפטיים */}
