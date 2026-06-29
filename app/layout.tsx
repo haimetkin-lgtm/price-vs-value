@@ -23,6 +23,7 @@ function PvLogo() {
         </span>
         <span className="text-xs text-gray-400">מחיר מול שווי <span className="text-amber-500 font-medium">גרסת ביתא</span></span>
       </div>
+    </div>
   );
 }
 
