@@ -18,7 +18,7 @@ export function Step1Property({ values, onChange }: Props) {
 
       <Input
         label="מחיר הנכס"
-        hint="המחיר המבוקש או מחיר העסקה"
+        hint="המחיר המבוקש או מחיר העסקה במועד ביצועה"
         unit="₪"
         type="number"
         value={values.marketPrice ?? ""}
