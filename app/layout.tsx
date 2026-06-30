@@ -43,7 +43,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </div>
         </header>
         {children}
-        <footer className="text-center py-4 text-xs text-gray-400 border-t border-gray-100 mt-8">
+        <footer className="text-center py-4 text-xs text-gray-400 border-t border-gray-100 mt-2">
           מבוסס על הספר <span className="font-medium text-gray-500">בועת נדל״ן</span>
           <br />
           חיים אטקין, שמאי מקרקעין, אנליסט נדל״ן, מומחה לנדל״ן וחוקר שוק · מייסד ובעלים של <span className="font-medium text-gray-500">בית שמאי</span>, בית הספר לפרקטיקה שמאית
