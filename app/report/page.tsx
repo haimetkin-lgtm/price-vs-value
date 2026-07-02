@@ -64,22 +64,31 @@ const DEMO_ROW: ReportRow = {
 
 function ReportFromSupabase({ id }: { id: string }) {
   const router = useRouter();
+  const params = useSearchParams();
   const [report, setReport] = useState<ReportRow | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase
-      .from("reports")
-      .select("*")
-      .eq("id", id)
-      .eq("paid", true)
-      .single()
-      .then(({ data, error }) => {
-        if (error || !data) router.push("/");
-        else setReport(data as ReportRow);
-        setLoading(false);
-      });
-  }, [id, router]);
+    async function load() {
+      // אם חזרנו מקארדקום — עדכן paid=true לפני שמביאים את הדוח
+      const fromCardcom = params.get("paid") === "true" || params.get("SuccessIndicator") !== null;
+      if (fromCardcom) {
+        await supabase.from("reports").update({ paid: true }).eq("id", id);
+      }
+
+      const { data, error } = await supabase
+        .from("reports")
+        .select("*")
+        .eq("id", id)
+        .eq("paid", true)
+        .single();
+
+      if (error || !data) router.push("/");
+      else setReport(data as ReportRow);
+      setLoading(false);
+    }
+    load();
+  }, [id, router, params]);
 
   if (loading) return <div className="text-center py-20 text-gray-400">טוען דוח...</div>;
   if (!report) return null;
