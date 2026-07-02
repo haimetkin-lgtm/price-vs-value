@@ -52,7 +52,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           © {new Date().getFullYear()} חיים אטקין · כל הזכויות שמורות
         </footer>
         <Script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js" strategy="afterInteractive" />
-        <Script id="free_accessibility_plugin_script" src="https://accessibility.f-static.com/site/free-accessibility-plugin/accessibility.min.js?lan=he&place=bottom-left&distance=50" crossOrigin="anonymous" strategy="afterInteractive" />
+        <Script id="free_accessibility_plugin_script" src="https://accessibility.f-static.com/site/free-accessibility-plugin/accessibility.min.js?lan=he&place=bottom-right&distance=50" crossOrigin="anonymous" strategy="afterInteractive" />
       </body>
     </html>
   );
