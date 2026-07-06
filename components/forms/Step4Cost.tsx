@@ -69,7 +69,7 @@ export function Step4Cost({ values, onChange }: Props) {
       </div>
 
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex flex-col gap-3">
-        <p className="text-xs font-medium text-blue-800">מילוי אוטומטי לפי מחירון לשכת שמאי המקרקעין, יוני 2026</p>
+        <p className="text-xs font-medium text-blue-800">מילוי אוטומטי לפי <a href="https://landvalue.org.il/loadedFiles/1783338676-KVFVS.pdf" target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-600">מחירון לשכת שמאי המקרקעין, יוני 2026</a></p>
         <div className="grid grid-cols-2 gap-3">
           <div className="flex flex-col gap-1">
             <label className="text-xs text-gray-600">אזור גיאוגרפי</label>
