@@ -12,12 +12,16 @@ export function Paywall({ reportParams, onCancel }: PaywallProps) {
   const [selected, setSelected] = useState<ReportTier>("standard");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
 
   async function handleCheckout() {
+    if (!email) { setError("נא להזין אימייל לקבלת הדוח."); return; }
     setLoading(true);
     setError("");
     try {
-      const reportId = await saveReport(reportParams);
+      const reportId = await saveReport({ ...reportParams, name, email, phone });
       redirectToStripePayment(selected, reportId);
     } catch (e) {
       setError("אירעה שגיאה. נסה שוב.");
@@ -81,6 +85,44 @@ export function Paywall({ reportParams, onCancel }: PaywallProps) {
               </button>
             );
           })}
+        </div>
+
+        <div className="flex flex-col gap-3">
+          <div>
+            <label className="text-xs text-gray-500 mb-1 block">שם מלא</label>
+            <input
+              type="text"
+              autoComplete="name"
+              value={name}
+              onChange={e => setName(e.target.value)}
+              placeholder="ישראל ישראלי"
+              className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label className="text-xs text-gray-500 mb-1 block">אימייל <span className="text-red-500">*</span></label>
+            <input
+              type="email"
+              autoComplete="email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              placeholder="name@example.com"
+              className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              dir="ltr"
+            />
+          </div>
+          <div>
+            <label className="text-xs text-gray-500 mb-1 block">טלפון <span className="text-gray-300">(אופציונלי)</span></label>
+            <input
+              type="tel"
+              autoComplete="tel"
+              value={phone}
+              onChange={e => setPhone(e.target.value)}
+              placeholder="050-0000000"
+              className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              dir="ltr"
+            />
+          </div>
         </div>
 
         {error && <p className="text-sm text-red-600 text-center">{error}</p>}

@@ -24,6 +24,9 @@ export interface SaveReportParams {
   uchAnnual: number;
   rentAnnual: number;
   inputsJson: Record<string, unknown>;
+  name?: string;
+  email?: string;
+  phone?: string;
 }
 
 export async function saveReport(params: SaveReportParams): Promise<string> {
@@ -57,6 +60,9 @@ export async function saveReport(params: SaveReportParams): Promise<string> {
       share_token: shareToken,
       paid: false,
       stripe_session_id: null,
+      customer_name: params.name ?? null,
+      customer_email: params.email ?? null,
+      customer_phone: params.phone ?? null,
     })
     .select("id")
     .single();
