@@ -23,7 +23,7 @@ const PRICELIST: Record<string, Record<string, number>> = {
 };
 
 const AREAS = Object.keys(PRICELIST);
-const TYPES = ["בניין נמוך", "בניין גבוה", "בניין רב קומות", "תת קרקעי"];
+const TYPES = ["בניין נמוך", "בניין גבוה", "בניין רב קומות"];
 
 interface Props {
   values: Partial<AllInputs>;
@@ -33,19 +33,28 @@ interface Props {
 export function Step4Cost({ values, onChange }: Props) {
   const [area, setArea] = useState("");
   const [buildingType, setBuildingType] = useState("");
+  const [hasBasement, setHasBasement] = useState(false);
+
+  function applyPrice(newArea: string, newType: string, basement: boolean) {
+    if (newArea && newType) {
+      const base = PRICELIST[newArea][newType];
+      onChange("hardCosts", Math.round(base * (basement ? 1.2 : 1)));
+    }
+  }
 
   function handleAreaChange(newArea: string) {
     setArea(newArea);
-    if (newArea && buildingType) {
-      onChange("hardCosts", PRICELIST[newArea][buildingType]);
-    }
+    applyPrice(newArea, buildingType, hasBasement);
   }
 
   function handleTypeChange(newType: string) {
     setBuildingType(newType);
-    if (area && newType) {
-      onChange("hardCosts", PRICELIST[area][newType]);
-    }
+    applyPrice(area, newType, hasBasement);
+  }
+
+  function handleBasementChange(checked: boolean) {
+    setHasBasement(checked);
+    applyPrice(area, buildingType, checked);
   }
 
   return (
@@ -85,9 +94,21 @@ export function Step4Cost({ values, onChange }: Props) {
             </select>
           </div>
         </div>
+        <label className="flex items-start gap-2 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={hasBasement}
+            onChange={e => handleBasementChange(e.target.checked)}
+            className="mt-0.5 w-4 h-4 accent-blue-600"
+          />
+          <div>
+            <p className="text-sm font-medium text-gray-800">לבניין יש חניון או מחסנים תת קרקעיים</p>
+            <p className="text-xs text-gray-500 mt-0.5">מוסיף 20% לעלות הבנייה. לבניינים עם שטח תת קרקעי, עלות הבנייה גבוהה ב-15% עד 25% לעומת בנייה עילית בלבד, תלוי בגודל החניון וביחס החניות לדירות.</p>
+          </div>
+        </label>
         {area && buildingType && (
           <p className="text-xs text-blue-700">
-            עלות בנייה ישירה: <strong>₪{PRICELIST[area][buildingType].toLocaleString("he-IL")}</strong> למ״ר (סטייה אפשרית ±10%)
+            עלות בנייה ישירה: <strong>₪{Math.round(PRICELIST[area][buildingType] * (hasBasement ? 1.2 : 1)).toLocaleString("he-IL")}</strong> למ״ר (סטייה אפשרית ±10%)
           </p>
         )}
       </div>
