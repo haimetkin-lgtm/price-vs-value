@@ -88,6 +88,7 @@ export function Paywall({ reportParams, onCancel }: PaywallProps) {
         </div>
 
         <div className="flex flex-col gap-3">
+          <p className="text-sm font-semibold text-gray-700 text-right">פרטים למשלוח הדוח</p>
           <div>
             <label className="text-xs text-gray-500 mb-1 block">שם מלא</label>
             <input

@@ -74,6 +74,17 @@ function ReportFromSupabase({ id }: { id: string }) {
       const fromCardcom = params.get("paid") === "true" || params.get("SuccessIndicator") !== null;
       if (fromCardcom) {
         await supabase.from("reports").update({ paid: true }).eq("id", id);
+        // שלח מייל ללקוח עם קישור לדוח
+        try {
+          await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/send-report-email`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+            },
+            body: JSON.stringify({ report_id: id }),
+          });
+        } catch (_) {}
       }
 
       const { data, error } = await supabase
