@@ -130,7 +130,7 @@ export function Step3Rent({ values, onChange }: Props) {
           <div>
             <p className="text-xs text-gray-600 font-medium">ריבית פריים נוכחית</p>
             <a href="https://www.boi.org.il" target="_blank" rel="noopener noreferrer"
-              className="text-xs text-blue-500 underline">בדוק באתר בנק ישראל</a>
+              className="text-xs text-blue-500 underline">בדוק שינויים באתר בנק ישראל</a>
           </div>
           <div className="flex items-center gap-1.5">
             <input
