@@ -6,6 +6,7 @@ export interface TriangulationInputs {
   vRent: number;
   vcost: number;
   marketPrice: number;
+  weights?: { wPaff: number; wRent: number; wCost: number };
 }
 
 export interface TriangulationResult {
@@ -19,12 +20,19 @@ export interface TriangulationResult {
 }
 
 export function calcTriangulation(inputs: TriangulationInputs): TriangulationResult {
-  const { paff, vRent, vcost, marketPrice } = inputs;
+  const { paff, vRent, vcost, marketPrice, weights } = inputs;
 
   const values = [paff, vRent, vcost].filter(v => v > 0);
   const vL = Math.min(...values);
   const vU = Math.max(...values);
-  const vStar = values.reduce((a, b) => a + b, 0) / values.length;
+
+  let vStar: number;
+  if (weights) {
+    const wSum = (weights.wPaff + weights.wRent + weights.wCost) || 1;
+    vStar = (paff * weights.wPaff + vRent * weights.wRent + vcost * weights.wCost) / wSum;
+  } else {
+    vStar = values.reduce((a, b) => a + b, 0) / values.length;
+  }
 
   const pricePremiumPct = ((marketPrice - vStar) / vStar) * 100;
 

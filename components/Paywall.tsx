@@ -52,6 +52,7 @@ export function Paywall({ reportParams, onCancel }: PaywallProps) {
               : [
                   "כל מה שבניתוח הבסיסי +",
                   "מודל אקונומטרי רביעי: V_econ",
+                  "שקלול מותאם אישית של שלושת המודלים",
                   "PDF מורחב עם פירוט מלא",
                 ];
 

@@ -68,6 +68,8 @@ const DEMO_ROW_APPRAISER: ReportRow = {
   tier: "appraiser",
   share_token: "demo-appraiser",
   v_econ: 1_920_000,
+  price_premium_pct: 19.8,
+  inputs_json: { wPaff: 20, wRent: 50, wCost: 30 },
 };
 
 function ReportFromSupabase({ id }: { id: string }) {
@@ -112,6 +114,38 @@ function ReportFromSupabase({ id }: { id: string }) {
   if (loading) return <div className="text-center py-20 text-gray-400">טוען דוח...</div>;
   if (!report) return null;
   return <ReportView report={report} isDemo={false} />;
+}
+
+function WeightsCard({ inputs }: { inputs: Record<string, unknown> }) {
+  const wPaff = (inputs.wPaff as number) ?? 33;
+  const wRent = (inputs.wRent as number) ?? 33;
+  const wCost = (inputs.wCost as number) ?? 34;
+  const wSum = (wPaff + wRent + wCost) || 1;
+  const rows = [
+    { label: "Paff (יכולת מימון)", w: wPaff },
+    { label: "Vrent (הכנסה משכירות)", w: wRent },
+    { label: "Vcost (עלות ייצור)", w: wCost },
+  ];
+  return (
+    <Card>
+      <h2 className="text-sm font-semibold text-gray-900 mb-3">שקלול מודלים שהוחל</h2>
+      <div className="flex flex-col gap-2">
+        {rows.map(({ label, w }) => {
+          const pct = Math.round(w / wSum * 100);
+          return (
+            <div key={label} className="flex items-center gap-3">
+              <span className="text-xs text-gray-500 w-44 text-right flex-shrink-0">{label}</span>
+              <div className="flex-1 bg-gray-100 rounded-full h-2 overflow-hidden">
+                <div className="h-full bg-blue-500 rounded-full" style={{ width: `${pct}%` }} />
+              </div>
+              <span className="text-xs font-semibold text-blue-700 w-9 text-left">{pct}%</span>
+            </div>
+          );
+        })}
+      </div>
+      <p className="text-xs text-gray-400 mt-3">השקלול קובע את משקל כל מודל בחישוב V* (נקודת המרכז לחישוב פרמיית המחיר)</p>
+    </Card>
+  );
 }
 
 function ReportView({ report, isDemo }: { report: ReportRow; isDemo: boolean }) {
@@ -204,7 +238,7 @@ function ReportView({ report, isDemo }: { report: ReportRow; isDemo: boolean }) 
           {report.tier === "standard" ? (
             <div className="mt-3 bg-gray-50 rounded-lg px-4 py-3 text-xs text-gray-500 flex items-start gap-2">
               <span>🔒</span>
-              <span>המודל האקונומטרי (V<sub>econ</sub>) זמין בניתוח המורחב בלבד</span>
+              <span>המודל האקונומטרי (V<sub>econ</sub>) וניתוח שקלול מותאם זמינים בניתוח המורחב בלבד</span>
             </div>
           ) : report.v_econ ? (
             <ModelBar label="V_econ" value={report.v_econ} marketPrice={report.market_price} vL={vL} vU={vU} />
@@ -262,6 +296,10 @@ function ReportView({ report, isDemo }: { report: ReportRow; isDemo: boolean }) 
             </div>
           </Card>
         </div>
+
+        {report.tier === "appraiser" && (
+          <WeightsCard inputs={report.inputs_json} />
+        )}
 
         <Card>
           <h2 className="text-sm font-semibold text-gray-900 mb-4">ניתוח היסטורי 2000–2024</h2>

@@ -105,6 +105,40 @@ export function Step5Assumptions({ values, onChange }: Props) {
           { value: "-0.02", label: "תיקון מחירים — ירידת ערך ריאלית (−2%)" },
         ]}
       />
+
+      <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 flex flex-col gap-3">
+        <div>
+          <p className="text-xs font-semibold text-blue-800">שקלול מודלי השווי</p>
+          <p className="text-xs text-blue-600 mt-0.5">קובע את המשקל של כל מודל בחישוב V* (נקודת המרכז)</p>
+        </div>
+        {([
+          { key: "wPaff" as keyof AllInputs, label: "Paff", sub: "יכולת מימון" },
+          { key: "wRent" as keyof AllInputs, label: "Vrent", sub: "הכנסה משכירות" },
+          { key: "wCost" as keyof AllInputs, label: "Vcost", sub: "עלות ייצור" },
+        ] as const).map(({ key, label, sub }) => {
+          const wP = (values.wPaff ?? 33);
+          const wR = (values.wRent ?? 33);
+          const wC = (values.wCost ?? 34);
+          const wSum = (wP + wR + wC) || 1;
+          const raw = (values[key] as number | undefined) ?? (key === "wCost" ? 34 : 33);
+          const pct = Math.round(raw / wSum * 100);
+          return (
+            <div key={String(key)} className="flex items-center gap-3">
+              <div className="w-24 text-right flex-shrink-0">
+                <span className="text-xs font-medium text-gray-700">{label}</span>
+                <span className="block text-xs text-gray-400">{sub}</span>
+              </div>
+              <input
+                type="range" min={0} max={100} step={5}
+                value={raw}
+                onChange={e => onChange(key, Number(e.target.value))}
+                className="flex-1 accent-blue-600 h-1.5"
+              />
+              <span className="text-xs font-semibold text-blue-700 w-9 text-left">{pct}%</span>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }

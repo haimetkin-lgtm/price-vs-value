@@ -89,6 +89,9 @@ const DEFAULTS: Partial<AllInputs> = {
   marketing: 1000,
   contingency: 800,
   landMarketValuePerSqm: 8000,
+  wPaff: 33,
+  wRent: 33,
+  wCost: 34,
 };
 
 function fmt(n: number) {
@@ -155,6 +158,7 @@ export default function Home() {
     results = calcTriangulation({
       paff: paffRes.paff, vRent: vrentRes.vRent,
       vcost: vcostRes.vcost, marketPrice: inputs.marketPrice!,
+      weights: { wPaff: inputs.wPaff ?? 33, wRent: inputs.wRent ?? 33, wCost: inputs.wCost ?? 34 },
     });
 
     uchResult = calcUch({

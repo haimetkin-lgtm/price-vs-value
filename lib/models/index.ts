@@ -57,4 +57,9 @@ export interface AllInputs {
 
   // נגישות
   medianAnnualIncome: number;
+
+  // שקלול מודלים (0–100, מנורמל אוטומטית)
+  wPaff: number;
+  wRent: number;
+  wCost: number;
 }
