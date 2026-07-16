@@ -180,11 +180,11 @@ export function Step3Rent({ values, onChange }: Props) {
               <span className="text-xs font-bold text-blue-700">+{spread.toFixed(2)}%</span>
             </div>
             <input
-              type="range"
+              type="range" dir="ltr"
               min={RINGS[ring].min} max={RINGS[ring].max} step={0.25}
               value={spread}
               onChange={e => setSpread(Number(e.target.value))}
-              className="accent-blue-600"
+              className="accent-blue-600 w-full"
             />
             <div className="flex justify-between text-xs text-gray-400">
               <span>+{RINGS[ring].min}%</span>
@@ -194,18 +194,25 @@ export function Step3Rent({ values, onChange }: Props) {
         )}
 
         {/* תוצאה */}
-        <div className="border-t border-gray-200 pt-3 flex flex-col gap-1.5">
-          {recommendedCap !== null && (
-            <div className="flex justify-between items-center text-xs bg-blue-50 px-3 py-2 rounded-lg">
-              <span className="text-blue-700 font-medium">שיעור היוון מומלץ לנכס זה</span>
-              <span className="font-bold text-blue-800 text-sm">{recommendedCap.toFixed(2)}%</span>
+        {ring !== null && (
+          <div className="border-t border-gray-200 pt-3">
+            <div className="flex justify-between items-center bg-blue-50 border border-blue-200 px-4 py-3 rounded-xl">
+              <div className="text-xs text-blue-600">
+                פריים {prime ?? "?"}% + תוספת {spread.toFixed(2)}%
+              </div>
+              <div className="text-right">
+                <div className="text-xs text-blue-600 font-medium">שיעור היוון מומלץ</div>
+                <div className="text-xl font-bold text-blue-800">
+                  {prime ? (prime + spread).toFixed(2) : "—"}%
+                </div>
+              </div>
             </div>
-          )}
-          <div className="flex justify-between items-center text-xs px-3 py-2 rounded-lg bg-gray-100">
-            <span className="text-gray-500">שיעור היוון מחושב מהפרמטרים שלך</span>
-            <span className="font-semibold text-gray-700">{yCapModel.toFixed(2)}%</span>
+            <div className="flex justify-between items-center text-xs px-3 py-2 mt-2 rounded-lg bg-gray-100">
+              <span className="text-gray-500">שיעור היוון מחושב מהפרמטרים שלך</span>
+              <span className="font-semibold text-gray-700">{yCapModel.toFixed(2)}%</span>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       <Input
