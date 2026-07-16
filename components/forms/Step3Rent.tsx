@@ -180,7 +180,7 @@ export function Step3Rent({ values, onChange }: Props) {
               <span className="text-xs font-bold text-blue-700">+{spread.toFixed(2)}%</span>
             </div>
             <input
-              type="range" dir="ltr"
+              type="range"
               min={RINGS[ring].min} max={RINGS[ring].max} step={0.25}
               value={spread}
               onChange={e => setSpread(Number(e.target.value))}
