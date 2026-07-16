@@ -238,6 +238,20 @@ export default function Home() {
           <div className="mt-4 text-xs text-gray-400">
             מ-<span className="text-gray-600 font-medium">₪18</span> · תשלום חד-פעמי · ללא מנוי
           </div>
+          <div className="mt-4 flex justify-center gap-3 flex-wrap">
+            <a
+              href="report?demo=true"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-gray-200 bg-white text-sm text-gray-600 hover:border-blue-300 hover:text-blue-600 transition-colors shadow-sm"
+            >
+              ראה דוח בסיסי לדוגמה →
+            </a>
+            <a
+              href="report?demo=appraiser"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-blue-200 bg-blue-50 text-sm text-blue-700 hover:bg-blue-100 transition-colors shadow-sm"
+            >
+              ראה דוח מורחב לדוגמה →
+            </a>
+          </div>
           <div className="mt-3">
             <a href="#glossary" className="text-xs text-blue-500 hover:text-blue-700 transition-colors">
               מה המושגים האלה אומרים? ↓
