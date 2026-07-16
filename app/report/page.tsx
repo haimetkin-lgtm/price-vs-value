@@ -62,6 +62,13 @@ const DEMO_ROW: ReportRow = {
   stripe_session_id: null,
 };
 
+const DEMO_ROW_APPRAISER: ReportRow = {
+  ...DEMO_ROW,
+  id: "demo-appraiser",
+  tier: "appraiser",
+  share_token: "demo-appraiser",
+};
+
 function ReportFromSupabase({ id }: { id: string }) {
   const router = useRouter();
   const params = useSearchParams();
@@ -288,7 +295,8 @@ function ReportContent() {
   const isDemo = params.get("demo") === "true" || id.startsWith("demo-");
 
   if (isDemo || !id) {
-    return <ReportView report={DEMO_ROW} isDemo={true} />;
+    const demoReport = params.get("demo") === "appraiser" ? DEMO_ROW_APPRAISER : DEMO_ROW;
+    return <ReportView report={demoReport} isDemo={true} />;
   }
 
   return <ReportFromSupabase id={id} />;
