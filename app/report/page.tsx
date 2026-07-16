@@ -115,7 +115,7 @@ function ReportFromSupabase({ id }: { id: string }) {
 }
 
 function ReportView({ report, isDemo }: { report: ReportRow; isDemo: boolean }) {
-  const values = [report.paff, report.v_rent, report.v_cost].filter(v => v > 0);
+  const values = [report.paff, report.v_rent, report.v_cost, ...(report.v_econ ? [report.v_econ] : [])].filter(v => v > 0);
   const vL = Math.min(...values);
   const vU = Math.max(...values);
   const vStar = values.reduce((a, b) => a + b, 0) / values.length;
