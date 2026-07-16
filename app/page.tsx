@@ -240,13 +240,13 @@ export default function Home() {
           </div>
           <div className="mt-4 flex justify-center gap-3 flex-wrap">
             <a
-              href="report?demo=true"
+              href="/price-vs-value/report?demo=true"
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-gray-200 bg-white text-sm text-gray-600 hover:border-blue-300 hover:text-blue-600 transition-colors shadow-sm"
             >
               ראה דוח בסיסי לדוגמה →
             </a>
             <a
-              href="report?demo=appraiser"
+              href="/price-vs-value/report?demo=appraiser"
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-blue-200 bg-blue-50 text-sm text-blue-700 hover:bg-blue-100 transition-colors shadow-sm"
             >
               ראה דוח מורחב לדוגמה →

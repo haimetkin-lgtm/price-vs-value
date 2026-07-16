@@ -102,7 +102,7 @@ function ReportFromSupabase({ id }: { id: string }) {
         .eq("paid", true)
         .single();
 
-      if (error || !data) router.push("/");
+      if (error || !data) router.push("/price-vs-value/");
       else setReport(data as ReportRow);
       setLoading(false);
     }
@@ -137,7 +137,7 @@ function ReportView({ report, isDemo }: { report: ReportRow; isDemo: boolean }) 
 
         {isDemo && (
           <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-800 text-center">
-            ⚠️ זהו דוח הדגמה בלבד — לדוח אמיתי, <a href="/" className="underline font-medium">מלא נכס חדש</a>.
+            ⚠️ זהו דוח הדגמה בלבד — לדוח אמיתי, <a href="/price-vs-value/" className="underline font-medium">מלא נכס חדש</a>.
           </div>
         )}
 
