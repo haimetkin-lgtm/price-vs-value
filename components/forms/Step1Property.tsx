@@ -79,6 +79,7 @@ export function Step1Property({ values, onChange }: Props) {
         <input
           type="month"
           value={values.purchaseDate ?? ""}
+          max={new Date().toISOString().slice(0, 7)}
           onChange={e => onChange("purchaseDate", e.target.value)}
           className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
