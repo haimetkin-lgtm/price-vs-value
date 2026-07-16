@@ -102,7 +102,7 @@ function ReportFromSupabase({ id }: { id: string }) {
         .eq("paid", true)
         .single();
 
-      if (error || !data) router.push("/price-vs-value/");
+      if (error || !data) router.push("/");
       else setReport(data as ReportRow);
       setLoading(false);
     }
