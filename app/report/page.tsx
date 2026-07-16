@@ -67,6 +67,7 @@ const DEMO_ROW_APPRAISER: ReportRow = {
   id: "demo-appraiser",
   tier: "appraiser",
   share_token: "demo-appraiser",
+  v_econ: 1_920_000,
 };
 
 function ReportFromSupabase({ id }: { id: string }) {
@@ -200,12 +201,14 @@ function ReportView({ report, isDemo }: { report: ReportRow; isDemo: boolean }) 
           <ModelBar label="Paff" value={report.paff} marketPrice={report.market_price} vL={vL} vU={vU} />
           <ModelBar label="Vrent" value={report.v_rent} marketPrice={report.market_price} vL={vL} vU={vU} />
           <ModelBar label="Vcost" value={report.v_cost} marketPrice={report.market_price} vL={vL} vU={vU} />
-          {report.tier === "standard" && (
+          {report.tier === "standard" ? (
             <div className="mt-3 bg-gray-50 rounded-lg px-4 py-3 text-xs text-gray-500 flex items-start gap-2">
               <span>🔒</span>
               <span>המודל האקונומטרי (V<sub>econ</sub>) זמין בניתוח המורחב בלבד</span>
             </div>
-          )}
+          ) : report.v_econ ? (
+            <ModelBar label="V_econ" value={report.v_econ} marketPrice={report.market_price} vL={vL} vU={vU} />
+          ) : null}
         </Card>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

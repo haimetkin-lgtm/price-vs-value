@@ -22,6 +22,7 @@ export interface ReportRow {
   paff: number;
   v_rent: number;
   v_cost: number;
+  v_econ?: number | null;
   price_premium_pct: number;
   pir: number;
   hai: number;
