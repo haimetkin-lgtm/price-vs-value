@@ -62,4 +62,7 @@ export interface AllInputs {
   wPaff: number;
   wRent: number;
   wCost: number;
+
+  // ריבית פריים (לעזר — לא משמשת בחישוב, רק לתצוגת המלצה)
+  primeRate: number;
 }

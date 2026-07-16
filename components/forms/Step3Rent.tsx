@@ -9,6 +9,20 @@ interface Props {
 }
 
 export function Step3Rent({ values, onChange }: Props) {
+  const prime = values.primeRate ?? 6;
+  const rfNominal = values.rfNominal ?? 0.04;
+  const inflation = values.inflation ?? 0.025;
+  const riskPremium = values.riskPremium ?? 0.02;
+  const rentGrowth = values.rentGrowth ?? 0.01;
+  const rfReal = (1 + rfNominal) / (1 + inflation) - 1;
+  const yCap = (rfReal + riskPremium - rentGrowth) * 100;
+
+  const rings = [
+    { label: "מעגל א׳ — מרכז / גוש דן", from: prime + 1.5, to: prime + 1.5 },
+    { label: "מעגל ב׳ — שרון / שפלה / ירושלים", from: prime + 2, to: prime + 2.5 },
+    { label: "מעגל ג׳ — פריפריה", from: prime + 3, to: prime + 3.5 },
+  ];
+
   return (
     <div className="flex flex-col gap-5">
       <div>
@@ -94,6 +108,54 @@ export function Step3Rent({ values, onChange }: Props) {
             placeholder="1.0"
             step="0.1"
           />
+        </div>
+      </div>
+
+      <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 flex flex-col gap-3">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex-1">
+            <p className="text-xs font-semibold text-gray-700 mb-0.5">ריבית פריים נוכחית</p>
+            <p className="text-xs text-gray-400">
+              בדוק באתר{" "}
+              <a href="https://www.boi.org.il" target="_blank" rel="noopener noreferrer" className="underline text-blue-500">
+                בנק ישראל
+              </a>
+            </p>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <input
+              type="number"
+              step="0.25"
+              min={0}
+              max={20}
+              value={prime}
+              onChange={e => onChange("primeRate", Number(e.target.value))}
+              className="w-20 rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-center font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            />
+            <span className="text-sm text-gray-500">%</span>
+          </div>
+        </div>
+
+        <div className="border-t border-gray-200 pt-3">
+          <p className="text-xs font-medium text-gray-600 mb-2">שיעור היוון מומלץ לפי מעגל ביקוש</p>
+          <div className="flex flex-col gap-1.5">
+            {rings.map(({ label, from, to }) => (
+              <div key={label} className="flex justify-between items-center text-xs">
+                <span className="text-gray-500">{label}</span>
+                <span className="font-semibold text-blue-700">
+                  {from === to ? `${from.toFixed(1)}%` : `${from.toFixed(1)}%–${to.toFixed(1)}%`}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className={`flex justify-between items-center text-xs px-3 py-2 rounded-lg mt-1
+          ${yCap < rings[0].from - 0.5 || yCap > rings[2].to + 0.5
+            ? "bg-amber-50 text-amber-700"
+            : "bg-green-50 text-green-700"}`}>
+          <span>שיעור ההיוון המחושב מהפרמטרים שלך</span>
+          <span className="font-bold">{yCap.toFixed(2)}%</span>
         </div>
       </div>
 
