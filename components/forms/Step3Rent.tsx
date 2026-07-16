@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import type { AllInputs } from "@/lib/models";
@@ -8,20 +9,30 @@ interface Props {
   onChange: (field: keyof AllInputs, value: number | string) => void;
 }
 
+const RINGS = [
+  { label: "מעגל א׳ — מרכז / גוש דן", min: 1.0, max: 1.5 },
+  { label: "מעגל ב׳ — שרון / שפלה / ירושלים", min: 1.5, max: 2.5 },
+  { label: "מעגל ג׳ — פריפריה", min: 2.5, max: 3.5 },
+];
+
 export function Step3Rent({ values, onChange }: Props) {
-  const prime = values.primeRate ?? 6;
+  const [ring, setRing] = useState<number | null>(null);
+  const [spread, setSpread] = useState<number>(1.5);
+
+  const prime = values.primeRate;
   const rfNominal = values.rfNominal ?? 0.04;
   const inflation = values.inflation ?? 0.025;
   const riskPremium = values.riskPremium ?? 0.02;
   const rentGrowth = values.rentGrowth ?? 0.01;
   const rfReal = (1 + rfNominal) / (1 + inflation) - 1;
-  const yCap = (rfReal + riskPremium - rentGrowth) * 100;
+  const yCapModel = (rfReal + riskPremium - rentGrowth) * 100;
 
-  const rings = [
-    { label: "מעגל א׳ — מרכז / גוש דן", from: prime + 1.5, to: prime + 1.5 },
-    { label: "מעגל ב׳ — שרון / שפלה / ירושלים", from: prime + 2, to: prime + 2.5 },
-    { label: "מעגל ג׳ — פריפריה", from: prime + 3, to: prime + 3.5 },
-  ];
+  function handleRingChange(idx: number) {
+    setRing(idx);
+    setSpread(Number(((RINGS[idx].min + RINGS[idx].max) / 2).toFixed(2)));
+  }
+
+  const recommendedCap = prime && ring !== null ? prime + spread : null;
 
   return (
     <div className="flex flex-col gap-5">
@@ -111,24 +122,21 @@ export function Step3Rent({ values, onChange }: Props) {
         </div>
       </div>
 
-      <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 flex flex-col gap-3">
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex-1">
-            <p className="text-xs font-semibold text-gray-700 mb-0.5">ריבית פריים נוכחית</p>
-            <p className="text-xs text-gray-400">
-              בדוק באתר{" "}
-              <a href="https://www.boi.org.il" target="_blank" rel="noopener noreferrer" className="underline text-blue-500">
-                בנק ישראל
-              </a>
-            </p>
+      <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 flex flex-col gap-4">
+        <p className="text-xs font-semibold text-gray-700">עוגן שיעור היוון — לפי ריבית פריים ומעגל ביקוש</p>
+
+        {/* שדה פריים */}
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <p className="text-xs text-gray-600 font-medium">ריבית פריים נוכחית</p>
+            <a href="https://www.boi.org.il" target="_blank" rel="noopener noreferrer"
+              className="text-xs text-blue-500 underline">בדוק באתר בנק ישראל</a>
           </div>
           <div className="flex items-center gap-1.5">
             <input
-              type="number"
-              step="0.25"
-              min={0}
-              max={20}
-              value={prime}
+              type="number" step="0.25" min={0} max={20}
+              value={prime ?? ""}
+              placeholder="5.0"
               onChange={e => onChange("primeRate", Number(e.target.value))}
               className="w-20 rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-center font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
             />
@@ -136,26 +144,56 @@ export function Step3Rent({ values, onChange }: Props) {
           </div>
         </div>
 
-        <div className="border-t border-gray-200 pt-3">
-          <p className="text-xs font-medium text-gray-600 mb-2">שיעור היוון מומלץ לפי מעגל ביקוש</p>
-          <div className="flex flex-col gap-1.5">
-            {rings.map(({ label, from, to }) => (
-              <div key={label} className="flex justify-between items-center text-xs">
-                <span className="text-gray-500">{label}</span>
-                <span className="font-semibold text-blue-700">
-                  {from === to ? `${from.toFixed(1)}%` : `${from.toFixed(1)}%–${to.toFixed(1)}%`}
-                </span>
-              </div>
-            ))}
-          </div>
+        {/* בחירת מעגל */}
+        <div className="flex flex-col gap-1.5">
+          <p className="text-xs text-gray-600 font-medium">מעגל ביקוש</p>
+          {RINGS.map((r, i) => (
+            <button
+              key={i}
+              type="button"
+              onClick={() => handleRingChange(i)}
+              className={`text-right px-3 py-2 rounded-lg border text-xs transition-colors
+                ${ring === i ? "border-blue-400 bg-blue-50 text-blue-800" : "border-gray-200 bg-white text-gray-600 hover:border-gray-300"}`}
+            >
+              <span className="font-medium">{r.label}</span>
+              <span className="mr-2 text-gray-400">(פריים +{r.min}% עד +{r.max}%)</span>
+            </button>
+          ))}
         </div>
 
-        <div className={`flex justify-between items-center text-xs px-3 py-2 rounded-lg mt-1
-          ${yCap < rings[0].from - 0.5 || yCap > rings[2].to + 0.5
-            ? "bg-amber-50 text-amber-700"
-            : "bg-green-50 text-green-700"}`}>
-          <span>שיעור ההיוון המחושב מהפרמטרים שלך</span>
-          <span className="font-bold">{yCap.toFixed(2)}%</span>
+        {/* בחירת תוספת */}
+        {ring !== null && (
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between items-center">
+              <p className="text-xs text-gray-600 font-medium">תוספת מעל הפריים</p>
+              <span className="text-xs font-bold text-blue-700">+{spread.toFixed(2)}%</span>
+            </div>
+            <input
+              type="range"
+              min={RINGS[ring].min} max={RINGS[ring].max} step={0.25}
+              value={spread}
+              onChange={e => setSpread(Number(e.target.value))}
+              className="accent-blue-600"
+            />
+            <div className="flex justify-between text-xs text-gray-400">
+              <span>+{RINGS[ring].min}%</span>
+              <span>+{RINGS[ring].max}%</span>
+            </div>
+          </div>
+        )}
+
+        {/* תוצאה */}
+        <div className="border-t border-gray-200 pt-3 flex flex-col gap-1.5">
+          {recommendedCap !== null && (
+            <div className="flex justify-between items-center text-xs bg-blue-50 px-3 py-2 rounded-lg">
+              <span className="text-blue-700 font-medium">שיעור היוון מומלץ לנכס זה</span>
+              <span className="font-bold text-blue-800 text-sm">{recommendedCap.toFixed(2)}%</span>
+            </div>
+          )}
+          <div className="flex justify-between items-center text-xs px-3 py-2 rounded-lg bg-gray-100">
+            <span className="text-gray-500">שיעור היוון מחושב מהפרמטרים שלך</span>
+            <span className="font-semibold text-gray-700">{yCapModel.toFixed(2)}%</span>
+          </div>
         </div>
       </div>
 

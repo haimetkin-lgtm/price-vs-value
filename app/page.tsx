@@ -92,7 +92,6 @@ const DEFAULTS: Partial<AllInputs> = {
   wPaff: 33,
   wRent: 33,
   wCost: 34,
-  primeRate: 5,
 };
 
 function fmt(n: number) {
