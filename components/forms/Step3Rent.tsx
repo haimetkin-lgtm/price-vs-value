@@ -146,7 +146,18 @@ export function Step3Rent({ values, onChange }: Props) {
 
         {/* בחירת מעגל */}
         <div className="flex flex-col gap-1.5">
-          <p className="text-xs text-gray-600 font-medium">מעגל ביקוש</p>
+          <div className="flex items-center gap-1.5">
+            <p className="text-xs text-gray-600 font-medium">מעגל ביקוש</p>
+            <div className="relative group">
+              <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-gray-200 text-gray-500 text-xs cursor-help font-bold leading-none">?</span>
+              <div className="absolute right-0 bottom-6 w-64 bg-gray-900 text-white text-xs rounded-lg p-3 hidden group-hover:block z-10 shadow-xl leading-relaxed">
+                <p className="font-semibold mb-1">מעגלי ביקוש בשוק הנדל״ן:</p>
+                <p className="mb-0.5"><span className="text-blue-300">מעגל א׳</span> — תל אביב</p>
+                <p className="mb-0.5"><span className="text-blue-300">מעגל ב׳</span> — ערי הלוויין של תל אביב</p>
+                <p><span className="text-blue-300">מעגל ג׳</span> — פריפריה ופריפריה רחוקה</p>
+              </div>
+            </div>
+          </div>
           {RINGS.map((r, i) => (
             <button
               key={i}
