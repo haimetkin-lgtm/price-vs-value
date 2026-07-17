@@ -34,6 +34,25 @@ export function Step3Rent({ values, onChange }: Props) {
 
   const recommendedCap = prime && ring !== null ? prime + spread : null;
 
+  // צבע yCap לפי הטווח
+  const primeSafe = prime ?? 5;
+  const minAllRings = primeSafe + RINGS[0].min;   // מינימום מעגל א׳
+  const maxAllRings = primeSafe + RINGS[2].max;   // מקסימום מעגל ג׳
+  const ringMin = ring !== null ? primeSafe + RINGS[ring].min : null;
+  const ringMax = ring !== null ? primeSafe + RINGS[ring].max : null;
+
+  const yCapColor =
+    yCapModel < minAllRings ? "text-red-600" :
+    (ringMin !== null && ringMax !== null && yCapModel >= ringMin && yCapModel <= ringMax) ? "text-green-600" :
+    "text-amber-600";
+
+  const yCapWarning =
+    yCapModel < minAllRings
+      ? "שיעור נמוך מהמקובל לפי מיקום הנכס — שקול להעלות פרמיית סיכון בבלוק Build-up שמעל"
+      : ring !== null && ringMin !== null && yCapModel < ringMin
+      ? "שיעור נמוך יחסית למעגל שבחרת — שקול להעלות פרמיית סיכון"
+      : null;
+
   return (
     <div className="flex flex-col gap-5">
       <div>
@@ -194,10 +213,16 @@ export function Step3Rent({ values, onChange }: Props) {
         )}
 
         {/* שיעור היוון מחושב — תמיד גלוי */}
-        <div className="flex justify-between items-center text-xs px-3 py-2 rounded-lg bg-gray-100">
+        <div className={`flex justify-between items-center text-xs px-3 py-2 rounded-lg
+          ${yCapModel < minAllRings ? "bg-red-50" : "bg-gray-100"}`}>
           <span className="text-gray-500">שיעור היוון מחושב מהפרמטרים שלך</span>
-          <span className="font-semibold text-gray-700">{yCapModel.toFixed(2)}%</span>
+          <span className={`font-bold ${yCapColor}`}>{yCapModel.toFixed(2)}%</span>
         </div>
+        {yCapWarning && (
+          <div className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2 leading-relaxed">
+            ⚠️ {yCapWarning}
+          </div>
+        )}
 
         {/* תוצאת עוגן — מופיע רק אחרי בחירת מעגל */}
         {ring !== null && (
