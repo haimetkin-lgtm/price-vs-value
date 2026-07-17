@@ -141,6 +141,11 @@ export function Step3Rent({ values, onChange }: Props) {
         </div>
       </div>
 
+      <p className="text-xs text-gray-400 text-right leading-relaxed">
+        השתמש בכלי העזר למטה כדי לבחון את שיעור ההיוון המתאים לנכס שלך לפי מיקומו —
+        ואז התאם — אם תרצה לעשות זאת — את <strong className="text-gray-600">פרמיית הסיכון</strong> בבלוק Build-up שמעל עד שהשיעור המחושב מתיישב עם המומלץ.
+      </p>
+
       <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 flex flex-col gap-4">
         <p className="text-xs font-semibold text-gray-700">עוגן שיעור היוון — לפי ריבית פריים ומעגל ביקוש</p>
 
@@ -211,12 +216,6 @@ export function Step3Rent({ values, onChange }: Props) {
             </div>
           </div>
         )}
-
-        {/* הסבר קישור בין שני הפאנלים */}
-        <p className="text-xs text-gray-400 text-right leading-relaxed">
-          השתמש בכלי העזר למטה כדי לבחון את שיעור ההיוון המתאים לנכס שלך לפי מיקומו —
-          ואז התאם — אם תרצה לעשות זאת — את <strong className="text-gray-600">פרמיית הסיכון</strong> בבלוק Build-up שמעל עד שהשיעור המחושב מתיישב עם המומלץ.
-        </p>
 
         {/* שיעור היוון מחושב — תמיד גלוי */}
         <div className={`flex justify-between items-center text-xs px-3 py-2 rounded-lg
