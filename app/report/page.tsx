@@ -310,7 +310,7 @@ function ReportView({ report, isDemo }: { report: ReportRow; isDemo: boolean }) 
           <h2 className="text-sm font-semibold text-gray-900 mb-3">סיכום ומסקנה</h2>
           <div className="bg-gray-50 rounded-lg p-4 text-sm text-gray-600 leading-relaxed">
             הנכס נסחר ב-<strong className="text-gray-900">{fmt(report.market_price)}</strong>,
-            שהוא <strong className={premiumColor}>{fmtPct(premium)}</strong> {premium > 0 ? "מעל" : "מתחת ל"}טווח
+            שהוא <strong className={premiumColor}>{fmtPct(premium)}</strong> {premium > 0 ? "מעל" : "מתחת ל"}{" "}טווח
             השווי הפונדמנטלי [{fmt(vL)}–{fmt(vU)}].
             מבחן ה-UCH מראה{" "}
             {buyIsExpensive
