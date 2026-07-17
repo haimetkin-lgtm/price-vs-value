@@ -68,7 +68,7 @@ const DEFAULTS: Partial<AllInputs> = {
   vacancyRate: 0.05,
   rfNominal: 0.04,
   inflation: 0.025,
-  riskPremium: 0.02,
+  riskPremium: 0.04,
   rentGrowth: 0.01,
   rdReal: 0.025,
   reReal: 0.035,
