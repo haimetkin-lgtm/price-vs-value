@@ -3,9 +3,22 @@ import Script from "next/script";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "מחיר מול שווי | Price vs Value",
-  description: "האם שילמת את המחיר הנכון? ניתוח פונדמנטלי של שווי נדל״ן למגורים בישראל",
+  title: "מחיר הוא נתון. שווי הוא מסקנה כלכלית.",
+  description: "האם שילמת את המחיר הנכון? בדוק את הפער בין מחיר השוק לשווי הפונדמנטלי — לפי שלושה מודלים כלכליים: יכולת מימון, הכנסה משכירות ועלות ייצור. מבוסס על הספר \"בועת נדל\"ן\".",
   icons: { icon: "/favicon.svg" },
+  openGraph: {
+    title: "מחיר הוא נתון. שווי הוא מסקנה כלכלית.",
+    description: "האם שילמת את המחיר הנכון? בדוק את הפער בין מחיר השוק לשווי הפונדמנטלי — לפי שלושה מודלים כלכליים: יכולת מימון, הכנסה משכירות ועלות ייצור. מבוסס על הספר \"בועת נדל\"ן\".",
+    images: [{ url: "https://haimetkin-lgtm.github.io/price-vs-value/og-image.jpg", width: 1080, height: 1080 }],
+    locale: "he_IL",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "מחיר הוא נתון. שווי הוא מסקנה כלכלית.",
+    description: "האם שילמת את המחיר הנכון? בדוק את הפער בין מחיר השוק לשווי הפונדמנטלי.",
+    images: ["https://haimetkin-lgtm.github.io/price-vs-value/og-image.jpg"],
+  },
 };
 
 function PvLogo() {
