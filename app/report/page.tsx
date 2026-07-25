@@ -207,14 +207,6 @@ function ReportView({ report, isDemo }: { report: ReportRow; isDemo: boolean }) 
             >
               ⬇ שמור PDF
             </button>
-            {!isDemo && (
-              <button
-                onClick={() => navigator.clipboard.writeText(shareUrl)}
-                className="text-xs px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50"
-              >
-                🔗 שתף
-              </button>
-            )}
           </div>
         </div>
 
