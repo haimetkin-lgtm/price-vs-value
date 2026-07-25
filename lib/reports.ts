@@ -17,6 +17,7 @@ export interface SaveReportParams {
   paff: number;
   vRent: number;
   vcost: number;
+  vEcon?: number;
   pricePremiumPct: number;
   pir: number;
   hai: number;
@@ -50,6 +51,7 @@ export async function saveReport(params: SaveReportParams): Promise<string> {
       paff: params.paff,
       v_rent: params.vRent,
       v_cost: params.vcost,
+      v_econ: params.vEcon ?? null,
       price_premium_pct: params.pricePremiumPct,
       pir: params.pir,
       hai: params.hai,

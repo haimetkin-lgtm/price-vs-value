@@ -6,6 +6,7 @@ const GLOSSARY = [
   { term: "Paff", full: "Price Affordability", desc: "המחיר המרבי שניתן לממן באופן סביר. מחושב על בסיס ההכנסה החודשית נטו, ההון העצמי, ההתחייבויות הקיימות ותנאי המשכנתא שהוזנו." },
   { term: "Vrent", full: "Value by Rent", desc: "שווי הנכס לפי השכירות שהוא מניב. מהוון לפי ריבית חסרת סיכון, פרמיית סיכון וצמיחת שכ\"ד. ככל שהמחיר גבוה יותר מ-Vrent, כך תשואת השכירות נמוכה יותר." },
   { term: "Vcost", full: "Value by Cost", desc: "אינדיקציה לעלות הקמת דירה דומה מאפס. בנייה, קרקע, פיתוח ורווח יזמי. מחיר הגבוה משמעותית מ-Vcost מחייב הסבר כלכלי: מיקום, זכויות, מחסור או איכות." },
+  { term: "V_econ", full: "Value by DCF", desc: "שווי הנכס לפי היוון תזרים מזומנים (DCF) על פני 10 שנות אחזקה. מחשב את הערך הנוכחי של כל ההכנסות משכירות העתידיות בתוספת שווי שיורי בסוף התקופה. הגישה המקצועית ביותר — שואלת כמה שווה הנכס כ\"מכונת הכנסה\" לטווח ארוך." },
   { term: "PIR", full: "Price-to-Income Ratio", desc: "כמה שנות הכנסה שנתית נדרשות לרכישת דירה. ככל שהיחס גבוה יותר ביחס לעבר ולאזורים דומים, רמת הנגישות נמוכה יותר." },
   { term: "HAI", full: "Housing Affordability Index", desc: "האם הכנסת משק הבית הממוצע מספיקה לעמוד בתשלומי המשכנתא. מעל 100 נגיש, מתחת 100 לא נגיש." },
   { term: "DSTI", full: "Debt Service-to-Income", desc: "אחוז ההכנסה החודשית המופנה להחזר חובות (משכנתא + הלוואות). בנק ישראל קבע מגבלות לפי מדרגות הכנסה. ככלל אצבע, ערך מעל 40% מצביע על עומס חוב גבוה." },
@@ -49,7 +50,7 @@ import { Step3Rent } from "@/components/forms/Step3Rent";
 import { Step4Cost } from "@/components/forms/Step4Cost";
 import { Step5Assumptions } from "@/components/forms/Step5Assumptions";
 import {
-  calcPaff, calcVrent, calcUch, calcVcost, calcTriangulation, calcAccessibility,
+  calcPaff, calcVrent, calcVecon, calcUch, calcVcost, calcTriangulation, calcAccessibility,
   type AllInputs,
 } from "@/lib/models";
 
@@ -160,6 +161,7 @@ export default function Home() {
   let results: ReturnType<typeof calcTriangulation> | null = null;
   let uchResult: ReturnType<typeof calcUch> | null = null;
   let accessResult: ReturnType<typeof calcAccessibility> | null = null;
+  let veconResult: ReturnType<typeof calcVecon> | null = null;
 
   if (canCalc) {
     const paffRes = calcPaff({
@@ -182,6 +184,12 @@ export default function Home() {
       contingency: inputs.contingency ?? 0, profitMargin: inputs.profitMargin!,
       completedValuePerSqm: inputs.marketPrice! / area,
       sqm: area, landMarketValuePerSqm: inputs.landMarketValuePerSqm ?? 0,
+    });
+
+    veconResult = calcVecon({
+      rentMonthly: inputs.rentMonthly!, vacancyRate: inputs.vacancyRate!,
+      expensesOpex: inputs.expensesOpex ?? 0, rfNominal: inputs.rfNominal!,
+      inflation: inputs.inflation!, riskPremium: inputs.riskPremium!, g: inputs.rentGrowth!,
     });
 
     results = calcTriangulation({
@@ -230,6 +238,7 @@ export default function Home() {
     paff: Math.round(results.modelValues.paff),
     vRent: Math.round(results.modelValues.vRent),
     vcost: Math.round(results.modelValues.vcost),
+    vEcon: veconResult ? Math.round(veconResult.vEcon) : undefined,
     pricePremiumPct: results.pricePremiumPct,
     pir: accessResult.pir,
     hai: accessResult.hai,

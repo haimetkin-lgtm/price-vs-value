@@ -1,5 +1,6 @@
 export * from "./paff";
 export * from "./vrent";
+export * from "./vecon";
 export * from "./uch";
 export * from "./vcost";
 export * from "./triangulation";

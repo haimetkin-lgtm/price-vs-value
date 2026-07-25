@@ -19,6 +19,7 @@ create table if not exists reports (
   paff          numeric not null default 0,
   v_rent        numeric not null default 0,
   v_cost        numeric not null default 0,
+  v_econ        numeric,
 
   -- מדדים
   price_premium_pct numeric not null default 0,
