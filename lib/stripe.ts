@@ -22,7 +22,8 @@ export function redirectToStripePayment(tier: ReportTier, reportId: string) {
   }
 
   const url = new URL(paymentLink);
-  url.searchParams.set("SuccessRedirectUrl", `${window.location.origin}/report?id=${reportId}`);
-  url.searchParams.set("FailedRedirectUrl", `${window.location.origin}/?payment=failed`);
+  const base = `${window.location.origin}/price-vs-value`;
+  url.searchParams.set("SuccessRedirectUrl", `${base}/report?id=${reportId}`);
+  url.searchParams.set("FailedRedirectUrl", `${base}/?payment=failed`);
   window.location.href = url.toString();
 }
