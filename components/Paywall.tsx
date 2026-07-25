@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState } from "react";
 import { redirectToStripePayment, TIER_CONFIG, type ReportTier } from "@/lib/stripe";
 import { saveReport, type SaveReportParams } from "@/lib/reports";
@@ -51,7 +51,7 @@ export function Paywall({ reportParams, onCancel }: PaywallProps) {
                 ]
               : [
                   "כל מה שבניתוח הבסיסי +",
-                  "מודל אקונומטרי רביעי: V_econ",
+                  "מודל אקונומטרי רביעי: Vecon",
                   "שקלול מותאם אישית של שלושת המודלים",
                   "PDF מורחב עם פירוט מלא",
                 ];
