@@ -2,23 +2,173 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import "./globals.css";
 
+const SITE_URL = "https://haimetkin-lgtm.github.io/price-vs-value";
+
+const TITLE = "מחשבון שווי דירה מול מחיר | האם שילמת את המחיר הנכון?";
+const DESCRIPTION =
+  "בדיקת שווי דירה מול מחיר השוק לפי שלושה מודלים כלכליים: יכולת מימון (PIR, HAI, DSTI), הכנסה משכירות ועלות ייצור. מחשבון אונליין לבדיקת כדאיות רכישת דירה, שכירות מול קנייה ואיתור תמחור חריג, מבית השמאי חיים אטקין, מחבר הספר \"בועת נדל\"ן\". דוח PDF מ-18 ₪, ללא מנוי.";
+
 export const metadata: Metadata = {
-  title: "מחיר הוא נתון. שווי הוא מסקנה כלכלית.",
-  description: "האם שילמת את המחיר הנכון? בדוק את הפער בין מחיר השוק לשווי הפונדמנטלי — לפי שלושה מודלים כלכליים: יכולת מימון, הכנסה משכירות ועלות ייצור. מבוסס על הספר \"בועת נדל\"ן\".",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: TITLE,
+    template: "%s | PriceVsValue מחיר מול שווי",
+  },
+  description: DESCRIPTION,
+  applicationName: "PriceVsValue",
+  authors: [{ name: "חיים אטקין, שמאי מקרקעין" }],
+  creator: "חיים אטקין",
+  publisher: "חיים אטקין, שמאות מקרקעין",
+  category: "נדל\"ן",
+  keywords: [
+    "מחשבון שווי דירה",
+    "בדיקת מחיר דירה",
+    "שווי דירה מול מחיר",
+    "הערכת שווי דירה אונליין",
+    "האם כדאי לקנות דירה עכשיו",
+    "כדאיות רכישת דירה",
+    "שכירות מול קנייה",
+    "מחיר דירה ריאלי",
+    "בועת נדל\"ן",
+    "יחס מחיר דירה להכנסה",
+    "PIR נדל\"ן",
+    "מדד HAI",
+    "DSTI משכנתא",
+    "משכנתא עודפת",
+    "תשואה משכירות",
+    "עלות ייצור דירה",
+    "שמאי מקרקעין",
+    "חיים אטקין",
+    "שמאות דיגיטלית",
+    "ניתוח כלכלי של דירה",
+    "האם המחיר של הדירה מוצדק",
+    "בדיקה לפני חתימה על חוזה דירה",
+  ],
+  alternates: { canonical: "/" },
   icons: { icon: "/favicon.svg" },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
   openGraph: {
-    title: "מחיר הוא נתון. שווי הוא מסקנה כלכלית.",
-    description: "האם שילמת את המחיר הנכון? בדוק את הפער בין מחיר השוק לשווי הפונדמנטלי — לפי שלושה מודלים כלכליים: יכולת מימון, הכנסה משכירות ועלות ייצור. מבוסס על הספר \"בועת נדל\"ן\".",
-    images: [{ url: "https://haimetkin-lgtm.github.io/price-vs-value/og-image.jpg", width: 1080, height: 1080 }],
+    title: TITLE,
+    description: DESCRIPTION,
+    url: SITE_URL,
+    siteName: "PriceVsValue · מחיר מול שווי",
+    images: [{ url: `${SITE_URL}/og-image.jpg`, width: 1080, height: 1080, alt: "מחשבון שווי דירה מול מחיר" }],
     locale: "he_IL",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "מחיר הוא נתון. שווי הוא מסקנה כלכלית.",
-    description: "האם שילמת את המחיר הנכון? בדוק את הפער בין מחיר השוק לשווי הפונדמנטלי.",
-    images: ["https://haimetkin-lgtm.github.io/price-vs-value/og-image.jpg"],
+    title: TITLE,
+    description: "בדיקת שווי דירה מול מחיר השוק לפי שלושה מודלים כלכליים. מחשבון אונליין לכדאיות רכישת דירה.",
+    images: [`${SITE_URL}/og-image.jpg`],
   },
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "@id": `${SITE_URL}/#app`,
+      name: "PriceVsValue · מחיר מול שווי",
+      alternateName: "מחשבון שווי דירה מול מחיר",
+      url: SITE_URL,
+      applicationCategory: "FinanceApplication",
+      operatingSystem: "Web",
+      inLanguage: "he-IL",
+      description: DESCRIPTION,
+      featureList: [
+        "בדיקת שווי דירה מול מחיר השוק",
+        "מדדי נגישות דיור PIR, HAI ו-DSTI",
+        "מבחן כדאיות שכירות מול רכישה",
+        "ניתוח לפי עלות ייצור",
+        "דוח PDF להורדה",
+      ],
+      offers: {
+        "@type": "Offer",
+        price: "18",
+        priceCurrency: "ILS",
+        description: "דוח ניתוח ממוקד. דוח מורחב מ-49 ₪. תשלום חד פעמי ללא מנוי.",
+      },
+      author: { "@id": `${SITE_URL}/#person` },
+      areaServed: { "@type": "Country", name: "ישראל" },
+    },
+    {
+      "@type": "Person",
+      "@id": `${SITE_URL}/#person`,
+      name: "חיים אטקין",
+      jobTitle: "שמאי מקרקעין, אנליסט נדל\"ן וחוקר שוק",
+      description:
+        "שמאי מקרקעין, מחבר הספר \"בועת נדל\"ן\", מייסד בית שמאי, בית הספר לפרקטיקה שמאית.",
+      email: "haimetkin@gmail.com",
+      knowsAbout: ["שמאות מקרקעין", "הערכת שווי דירות", "בועת נדל\"ן", "מדדי נגישות דיור", "מיסוי מקרקעין"],
+      url: "https://www.etkin.co.il",
+    },
+    {
+      "@type": "FAQPage",
+      "@id": `${SITE_URL}/#faq`,
+      mainEntity: [
+        {
+          "@type": "Question",
+          name: "איך בודקים אם מחיר של דירה מוצדק?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "מחיר מוצדק נבחן מול שווי כלכלי, ולא מול מחירי עסקאות בלבד. הכלי בודק את הדירה לפי שלושה עוגנים: יכולת מימון של משק בית (מדדי PIR, HAI ו-DSTI), הכנסה משכירות (תשואה ומכפיל), ועלות ייצור (קרקע, בנייה, מיסים ורווח יזמי). פער גדול בין המחיר לשווי הכלכלי מצביע על תמחור חריג.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "מה ההבדל בין מחיר דירה לשווי דירה?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "מחיר הוא נתון: הסכום שסוכם בעסקה. שווי הוא מסקנה כלכלית: המחיר הראוי לאחר בחינת הגורמים הכלכליים שעומדים בבסיס העסקה. שני מספרים שונים לחלוטין, ואי אפשר להסתמך על עסקאות בלבד כדי להסיק מהו השווי האמיתי של הנכס.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "מה זה מדד PIR ומה הוא אומר על מחיר הדירה?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "PIR (Price to Income Ratio) הוא היחס בין מחיר הדירה להכנסה השנתית של משק הבית. הוא מודד כמה שנות הכנסה נדרשות לרכישת הדירה, ומשמש להערכת נגישות הדיור. ככל שהיחס גבוה יותר, כך המחיר רחוק יותר מיכולת המימון הריאלית של הרוכשים.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "האם כדאי לקנות דירה עכשיו או להמשיך לשכור?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "התשובה תלויה ביחס בין עלות המשכנתא החודשית לדמי השכירות באותו נכס, בתשואה משכירות, בהון העצמי ובאופק ההחזקה. הכלי כולל מבחן כדאיות שכירות מול רכישה שמשווה בין המסלולים בנתונים שלכם.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "מהי משכנתא עודפת ואיך מזהים אותה?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "משכנתא עודפת היא הלוואה שניתנה על בסיס שווי נכס גבוה מהשווי הכלכלי הריאלי שלו. כאשר ניתוח מצביע על פער משמעותי בין המחיר ששולם לשווי הכלכלי, ניתן להזמין דוח שמאות מפורט המתאים להליכים משפטיים.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "כמה עולה בדיקת שווי דירה בכלי?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "החישוב הראשוני והתצוגה החיה ניתנים ללא עלות. דוח ניתוח ממוקד עולה 18 ₪ ודוח ניתוח מורחב 49 ₪. תשלום חד פעמי, ללא מנוי.",
+          },
+        },
+      ],
+    },
+  ],
 };
 
 function PvLogo() {
@@ -44,6 +194,12 @@ function PvLogo() {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="he" dir="rtl">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
+        />
+      </head>
       <body className="min-h-screen bg-gray-50">
         <header className="sticky top-0 z-40 bg-white border-b border-gray-100 shadow-sm">
           <div className="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between">
