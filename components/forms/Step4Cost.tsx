@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState } from "react";
 import { Input } from "@/components/ui/Input";
 import type { AllInputs } from "@/lib/models";
@@ -193,7 +193,7 @@ export function Step4Cost({ values, onChange }: Props) {
 
       <Input
         label="מחיר קרקע בשוק (מכרזי רמ״י / עסקאות)"
-        hint="לחישוב פער ספקולטיבי — Land Gap"
+        hint="כלל אצבע: פריפריה — 20%-30% ממחיר הדירה, ערי לוויין — 40%-50%, מרכז/תל אביב — 60%-70%"
         unit="₪/מ״ר בנוי"
         type="number"
         value={values.landMarketValuePerSqm ?? ""}
