@@ -149,7 +149,7 @@ function WeightsCard({ inputs }: { inputs: Record<string, unknown> }) {
 }
 
 function ReportView({ report, isDemo }: { report: ReportRow; isDemo: boolean }) {
-  const values = [report.paff, report.v_rent, report.v_cost, ...(report.Vecon ? [report.Vecon] : [])].filter(v => v > 0);
+  const values = [report.paff, report.v_rent, report.v_cost, ...(report.v_econ ? [report.v_econ] : [])].filter(v => v > 0);
   const vL = Math.min(...values);
   const vU = Math.max(...values);
   const vStar = values.reduce((a, b) => a + b, 0) / values.length;
@@ -232,8 +232,8 @@ function ReportView({ report, isDemo }: { report: ReportRow; isDemo: boolean }) 
               <span>🔒</span>
               <span>המודל האקונומטרי (V<sub>econ</sub>) וניתוח שקלול מותאם זמינים בניתוח המורחב בלבד</span>
             </div>
-          ) : report.Vecon ? (
-            <ModelBar label="Vecon" value={report.Vecon} marketPrice={report.market_price} vL={vL} vU={vU} />
+          ) : report.v_econ ? (
+            <ModelBar label="Vecon" value={report.v_econ} marketPrice={report.market_price} vL={vL} vU={vU} />
           ) : null}
         </Card>
 
