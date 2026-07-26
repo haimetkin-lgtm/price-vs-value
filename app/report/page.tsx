@@ -67,7 +67,7 @@ const DEMO_ROW_APPRAISER: ReportRow = {
   id: "demo-appraiser",
   tier: "appraiser",
   share_token: "demo-appraiser",
-  Vecon: 1_920_000,
+  v_econ: 1_920_000,
   price_premium_pct: 19.8,
   inputs_json: { wPaff: 20, wRent: 50, wCost: 30 },
 };
