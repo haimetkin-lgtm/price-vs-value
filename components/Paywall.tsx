@@ -21,7 +21,7 @@ export function Paywall({ reportParams, onCancel }: PaywallProps) {
     setLoading(true);
     setError("");
     try {
-      const reportId = await saveReport({ ...reportParams, name, email, phone });
+      const reportId = await saveReport({ ...reportParams, tier: selected, name, email, phone });
       redirectToStripePayment(selected, reportId);
     } catch (e) {
       setError("אירעה שגיאה. נסה שוב.");
