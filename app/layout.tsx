@@ -220,6 +220,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <br />
           © {new Date().getFullYear()} חיים אטקין · כל הזכויות שמורות
         </footer>
+        <Script src="https://www.googletagmanager.com/gtag/js?id=G-1E7CBNZ40M" strategy="afterInteractive" />
+        <Script id="ga4-init" strategy="afterInteractive">{`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-1E7CBNZ40M');
+        `}</Script>
         <Script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js" strategy="afterInteractive" />
         <Script id="free_accessibility_plugin_script" src="https://accessibility.f-static.com/site/free-accessibility-plugin/accessibility.min.js?lan=he&place=bottom-right&distance=50" crossOrigin="anonymous" strategy="afterInteractive" />
       </body>

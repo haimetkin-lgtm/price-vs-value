@@ -84,6 +84,12 @@ function ReportFromSupabase({ id }: { id: string }) {
       const fromCardcom = params.get("paid") === "true" || params.get("SuccessIndicator") !== null;
       if (fromCardcom) {
         await supabase.from("reports").update({ paid: true }).eq("id", id);
+        if (typeof window !== "undefined" && typeof window.gtag === "function") {
+          window.gtag("event", "purchase", {
+            transaction_id: id,
+            currency: "ILS",
+          });
+        }
         // שלח מייל ללקוח עם קישור לדוח
         try {
           await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/send-report-email`, {

@@ -415,7 +415,12 @@ export default function Home() {
             ) : (
               <button
                 disabled={!canCalc}
-                onClick={() => setShowPaywall(true)}
+                onClick={() => {
+                  if (typeof window !== "undefined" && typeof window.gtag === "function") {
+                    window.gtag("event", "calculator_complete");
+                  }
+                  setShowPaywall(true);
+                }}
                 className="px-6 py-2 text-sm rounded-lg bg-green-600 text-white
                   hover:bg-green-700 transition-colors font-medium disabled:opacity-40"
               >
