@@ -317,6 +317,24 @@ function ReportView({ report, isDemo }: { report: ReportRow; isDemo: boolean }) 
           </p>
         </Card>
 
+        {!isDemo && (
+          <Card className="border-blue-100 bg-blue-50">
+            <div className="text-center flex flex-col gap-3">
+              <div>
+                <h2 className="text-sm font-bold text-blue-900">רוצה לדון בממצאים עם שמאי מקרקעין?</h2>
+                <p className="text-xs text-blue-700 mt-1">חיים אטקין, שמאי מקרקעין ואנליסט נדל"ן — ייעוץ אישי על הדוח שלך</p>
+              </div>
+              <a
+                href={`https://secure.cardcom.solutions/EA/EA5/C10jrrHUkqHEw1uXwjdJw/PaymentSP?SuccessRedirectUrl=https://haimetkin-lgtm.github.io/price-vs-value/consult-success?report=${report.id}`}
+                className="inline-block w-full py-3 rounded-xl bg-blue-600 text-white font-semibold text-sm hover:bg-blue-700 transition-colors text-center"
+              >
+                לתיאום ייעוץ — ₪680 →
+              </a>
+              <p className="text-xs text-gray-400">תשלום מאובטח דרך Cardcom · לאחר התשלום תקבל קישור לפנייה ישירה בוואטסאפ</p>
+            </div>
+          </Card>
+        )}
+
       </div>
     </main>
   );
