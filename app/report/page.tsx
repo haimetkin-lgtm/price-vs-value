@@ -252,7 +252,7 @@ function ReportView({ report, isDemo }: { report: ReportRow; isDemo: boolean }) 
               <MetricTile label="HAI" value={report.hai.toFixed(0)}
                 sub={report.hai < 100 ? "אינו נגיש" : "נגיש"}
                 color={report.hai < 100 ? "text-red-600" : "text-green-600"} />
-              <MetricTile label="DSTI" value={report.dsti.toFixed(1) + "%"} sub="מגבלה: 35%"
+              <MetricTile label="DSTI" value={report.dsti.toFixed(1) + "%"} sub="רף מומלץ: 35%"
                 color={report.dsti > 35 ? "text-red-600" : "text-amber-600"} />
             </div>
             <div className="border-t border-gray-100 pt-3">
@@ -331,7 +331,7 @@ function ReportView({ report, isDemo }: { report: ReportRow; isDemo: boolean }) 
                 <p className="text-xs text-blue-700 mt-1">חיים אטקין, שמאי מקרקעין ואנליסט נדל"ן — ייעוץ אישי על הדוח שלך</p>
               </div>
               <a
-                href={`https://secure.cardcom.solutions/EA/EA5/C10jrrHUkqHEw1uXwjdJw/PaymentSP?SuccessRedirectUrl=https://haimetkin-lgtm.github.io/price-vs-value/consult-success?report=${report.id}`}
+                href={`https://secure.cardcom.solutions/EA/EA5/C10jrrHUkqHEw1uXwjdJw/PaymentSP?SuccessRedirectUrl=${encodeURIComponent(`https://haimetkin-lgtm.github.io/price-vs-value/consult-success?report=${report.id}`)}`}
                 className="inline-block w-full py-3 rounded-xl bg-blue-600 text-white font-semibold text-sm hover:bg-blue-700 transition-colors text-center"
               >
                 לתיאום ייעוץ — ₪680 →
