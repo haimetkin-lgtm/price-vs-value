@@ -159,7 +159,7 @@ function ReportView({ report, isDemo }: { report: ReportRow; isDemo: boolean }) 
   const vL = Math.min(...values);
   const vU = Math.max(...values);
   const vStar = values.reduce((a, b) => a + b, 0) / values.length;
-  const premium = report.price_premium_pct ?? ((report.market_price - vStar) / vStar) * 100;
+  const premium = values.length > 0 ? ((report.market_price - vStar) / vStar) * 100 : report.price_premium_pct;
   const status: "overpriced" | "fair" | "underpriced" =
     premium > 5 ? "overpriced" : premium < -5 ? "underpriced" : "fair";
   const premiumColor =
