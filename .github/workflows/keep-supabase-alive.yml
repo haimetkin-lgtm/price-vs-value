@@ -2,19 +2,29 @@ name: Keep Supabase Alive
 
 on:
   schedule:
-    - cron: "0 8 */5 * *"  # כל 5 ימים בשעה 08:00 UTC
-  workflow_dispatch:        # הפעלה ידנית אם צריך
+    - cron: "0 8 * * *"  # כל יום בשעה 08:00 UTC
+  workflow_dispatch:
 
 jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
-      - name: Ping Supabase
+      - name: Ping Supabase (with retries)
         run: |
-          curl -s -o /dev/null -w "%{http_code}" \
-            "$SUPABASE_URL/rest/v1/reports?select=id&limit=1" \
-            -H "apikey: $SUPABASE_ANON_KEY" \
-            -H "Authorization: Bearer $SUPABASE_ANON_KEY"
+          for i in 1 2 3; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 \
+              "$SUPABASE_URL/rest/v1/reports?select=id&limit=1" \
+              -H "apikey: $SUPABASE_ANON_KEY" \
+              -H "Authorization: Bearer $SUPABASE_ANON_KEY")
+            echo "Attempt $i: HTTP $STATUS"
+            if [ "$STATUS" = "200" ] || [ "$STATUS" = "206" ]; then
+              echo "Success"
+              exit 0
+            fi
+            sleep 30
+          done
+          echo "All attempts failed"
+          exit 1
         env:
           SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
