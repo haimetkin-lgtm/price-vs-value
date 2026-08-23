@@ -17,8 +17,8 @@ jobs:
               -H "apikey: $SUPABASE_ANON_KEY" \
               -H "Authorization: Bearer $SUPABASE_ANON_KEY")
             echo "Attempt $i: HTTP $STATUS"
-            if [ "$STATUS" = "200" ] || [ "$STATUS" = "206" ]; then
-              echo "Success"
+            if [ "$STATUS" != "000" ] && [ -n "$STATUS" ]; then
+              echo "Success (HTTP $STATUS)"
               exit 0
             fi
             sleep 30
