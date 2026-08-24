@@ -62,7 +62,7 @@ export const metadata: Metadata = {
     description: DESCRIPTION,
     url: SITE_URL,
     siteName: "PriceVsValue · מחיר מול שווי",
-    images: [{ url: `${SITE_URL}/og-image.jpg`, width: 1080, height: 1080, alt: "מחשבון שווי דירה מול מחיר" }],
+    images: [{ url: `${SITE_URL}/og-share.jpg`, width: 1200, height: 1200, alt: "מחשבון שווי דירה מול מחיר" }],
     locale: "he_IL",
     type: "website",
   },
@@ -70,7 +70,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: TITLE,
     description: "בדיקת שווי דירה מול מחיר השוק לפי שלושה מודלים כלכליים. מחשבון אונליין לכדאיות רכישת דירה.",
-    images: [`${SITE_URL}/og-image.jpg`],
+    images: [`${SITE_URL}/og-share.jpg`],
   },
 };
 
