@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import { supabase, type ReportRow } from "@/lib/supabase";
 import { ModelBar } from "@/components/report/ModelBar";
 import { HistoricalChart } from "@/components/report/HistoricalChart";
+import { calculateAnalysis, type AllInputs } from "@/lib/models";
 
 function fmt(n: number) {
   if (n >= 1_000_000) return "₪" + (n / 1_000_000).toFixed(2) + "M";
@@ -40,39 +41,49 @@ function MetricTile({ label, value, sub, color = "" }: { label: string; value: s
   );
 }
 
-// Demo data shown when running without Supabase
-const DEMO_ROW: ReportRow = {
-  id: "demo",
-  user_id: null,
-  created_at: new Date().toISOString(),
-  tier: "standard",
-  city: "תל אביב",
-  rooms: 4,
-  market_price: 2_400_000,
-  paff: 1_850_000,
-  v_rent: 2_050_000,
-  v_cost: 1_950_000,
-  price_premium_pct: 22.4,
-  pir: 13.3,
-  hai: 62,
-  dsti: 46.9,
-  uch_annual: 132_000,
-  rent_annual: 90_000,
-  inputs_json: {},
-  share_token: "demo",
-  paid: true,
-  stripe_session_id: null,
+const DEMO_INPUTS: AllInputs = {
+  marketPrice: 2_400_000, area: 100, city: "תל אביב", purpose: "own", rooms: 4,
+  purchaseDate: "2026-08", yNet: 24_000, theta: 0.33, existingDebts: 1_000,
+  fixedHousingCosts: 500, rNominal: 0.048, nMonths: 300, equity: 720_000, ltvMax: 0.75,
+  rentMonthly: 7_500, vacancyRate: 0.05, expensesOpex: 4_500, rfNominal: 0.04,
+  inflation: 0.025, riskPremium: 0.04, rentGrowth: 0.01, rdReal: 0.025,
+  reReal: 0.035, equityRatio: 0.30, taxRate: 0.002, maintenanceRate: 0.005,
+  depreciationRate: 0.01, rhoPremium: 0.01, eDeltaP: 0, hardCosts: 9_000,
+  indirectCosts: 1_500, softCosts: 2_000, financeCosts: 2_500,
+  constructionTaxes: 3_000, marketing: 1_000, contingency: 800,
+  profitMargin: 0.15, landMarketValuePerSqm: 8_000, medianAnnualIncome: 200_000,
+  wPaff: 33, wRent: 33, wCost: 34, primeRate: 5,
 };
 
-const DEMO_ROW_APPRAISER: ReportRow = {
-  ...DEMO_ROW,
-  id: "demo-appraiser",
-  tier: "appraiser",
-  share_token: "demo-appraiser",
-  v_econ: 1_920_000,
-  price_premium_pct: 19.8,
-  inputs_json: { wPaff: 20, wRent: 50, wCost: 30 },
-};
+function buildDemoReport(tier: "standard" | "appraiser"): ReportRow {
+  const inputs: AllInputs = tier === "appraiser"
+    ? { ...DEMO_INPUTS, wPaff: 20, wRent: 50, wCost: 30 }
+    : DEMO_INPUTS;
+  const analysis = calculateAnalysis(inputs);
+  const result = analysis.triangulation;
+  return {
+    id: tier === "appraiser" ? "demo-appraiser" : "demo",
+    user_id: null, created_at: "2026-08-31T12:00:00.000Z", tier,
+    city: inputs.city, rooms: inputs.rooms, market_price: inputs.marketPrice,
+    paff: Math.round(result.modelValues.paff), v_rent: Math.round(result.modelValues.vRent),
+    v_cost: Math.round(result.modelValues.vcost),
+    v_econ: tier === "appraiser" ? Math.round(analysis.vecon.vEcon) : null,
+    price_premium_pct: result.pricePremiumPct, pir: analysis.accessibility.pir,
+    hai: analysis.accessibility.hai, dsti: analysis.accessibility.dsti,
+    uch_annual: Math.round(analysis.uch.uchAnnual), rent_annual: Math.round(analysis.uch.rentAnnual),
+    inputs_json: { ...inputs, analysisSnapshot: {
+      vL: result.vL, vU: result.vU, vStar: result.vStar,
+      pricePremiumPct: result.pricePremiumPct, status: result.status,
+      dispersionPct: result.dispersionPct, confidence: result.confidence,
+      modelValues: result.modelValues, deviations: result.deviations,
+    }},
+    share_token: tier === "appraiser" ? "demo-appraiser" : "demo",
+    paid: true, stripe_session_id: null,
+  };
+}
+
+const DEMO_ROW = buildDemoReport("standard");
+const DEMO_ROW_APPRAISER = buildDemoReport("appraiser");
 
 function ReportFromSupabase({ accessToken }: { accessToken: string }) {
   const router = useRouter();
