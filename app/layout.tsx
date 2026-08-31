@@ -67,7 +67,12 @@ export const metadata: Metadata = {
     description: DESCRIPTION,
     url: SITE_URL,
     siteName: "PriceVsValue · מחיר מול שווי",
-    images: [{ url: `${SITE_URL}/og-share.jpg`, width: 1200, height: 1200, alt: "מחשבון שווי פונדמנטלי לדירה: מחיר מול שווי" }],
+    images: [{
+      url: `${SITE_URL}/og-social-wide.jpg`,
+      width: 1200,
+      height: 630,
+      alt: "מחיר מול שווי: מדד הפער בין מחיר הדירה לשווי הפונדמנטלי",
+    }],
     locale: "he_IL",
     type: "website",
   },
@@ -75,7 +80,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: TITLE,
     description: "מדד לגודל בועת המחיר בדירה: הפער הכספי והאחוזי בין מחיר השוק לשווי הפונדמנטלי.",
-    images: [`${SITE_URL}/og-share.jpg`],
+    images: [`${SITE_URL}/og-social-wide.jpg`],
   },
 };
 
