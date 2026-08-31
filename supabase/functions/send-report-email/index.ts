@@ -1,19 +1,14 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
-
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
-  }
-
   try {
-    const { report_id } = await req.json();
-    if (!report_id) throw new Error("report_id missing");
+    if (req.method !== "POST") return new Response("Method not allowed", { status: 405 });
+    if (req.headers.get("x-internal-secret") !== Deno.env.get("INTERNAL_FUNCTION_SECRET")) {
+      return new Response("Unauthorized", { status: 401 });
+    }
+    const { report_id, access_token } = await req.json();
+    if (!report_id || !access_token) throw new Error("missing report access context");
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
@@ -29,7 +24,7 @@ serve(async (req) => {
     if (error || !report) throw new Error("report not found");
     if (!report.customer_email) throw new Error("no customer email");
 
-    const reportUrl = `https://haimetkin-lgtm.github.io/price-vs-value/report?id=${report_id}`;
+    const reportUrl = `https://haimetkin-lgtm.github.io/price-vs-value/report?access_token=${encodeURIComponent(access_token)}`;
 
     const tierLabel = report.tier === "appraiser" ? "ניתוח מורחב" : "ניתוח בסיסי";
 
@@ -87,12 +82,12 @@ serve(async (req) => {
     }
 
     return new Response(JSON.stringify({ ok: true }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json" },
     });
   } catch (e) {
     return new Response(JSON.stringify({ error: (e as Error).message }), {
       status: 400,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json" },
     });
   }
 });

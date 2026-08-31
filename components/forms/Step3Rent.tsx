@@ -10,9 +10,9 @@ interface Props {
 }
 
 const RINGS = [
-  { label: "מעגל א׳ — מרכז / גוש דן", min: 1.0, max: 1.5 },
-  { label: "מעגל ב׳ — שרון / שפלה / ירושלים", min: 1.5, max: 2.5 },
-  { label: "מעגל ג׳ — פריפריה", min: 2.5, max: 3.5 },
+  { label: "מעגל א׳ - מרכז / גוש דן", min: 1.0, max: 1.5 },
+  { label: "מעגל ב׳ - שרון / שפלה / ירושלים", min: 1.5, max: 2.5 },
+  { label: "מעגל ג׳ - פריפריה", min: 2.5, max: 3.5 },
 ];
 
 export function Step3Rent({ values, onChange }: Props) {
@@ -48,15 +48,15 @@ export function Step3Rent({ values, onChange }: Props) {
 
   const yCapWarning =
     yCapModel < minAllRings
-      ? "שיעור נמוך מהמקובל לפי מיקום הנכס — שקול להעלות פרמיית סיכון בבלוק Build-up שמעל"
+      ? "שיעור נמוך מהמקובל לפי מיקום הנכס - שקול להעלות פרמיית סיכון בבלוק Build-up שמעל"
       : ring !== null && ringMin !== null && yCapModel < ringMin
-      ? "שיעור נמוך יחסית למעגל שבחרת — שקול להעלות פרמיית סיכון"
+      ? "שיעור נמוך יחסית למעגל שבחרת - שקול להעלות פרמיית סיכון"
       : null;
 
   return (
     <div className="flex flex-col gap-5">
       <div>
-        <h2 className="text-lg font-medium text-gray-900 mb-1">שכירות והיוון — V<sub>rent</sub></h2>
+        <h2 className="text-lg font-medium text-gray-900 mb-1">שכירות והיוון - V<sub>rent</sub></h2>
         <p className="text-sm text-gray-500">נתוני שוק השכירות באזור הנכס</p>
       </div>
 
@@ -142,12 +142,12 @@ export function Step3Rent({ values, onChange }: Props) {
       </div>
 
       <p className="text-xs text-gray-400 text-right leading-relaxed">
-        השתמש בכלי העזר למטה כדי לבחון את שיעור ההיוון המתאים לנכס שלך לפי מיקומו —
-        ואז התאם — אם תרצה לעשות זאת — את <strong className="text-gray-600">פרמיית הסיכון</strong> בבלוק Build-up שמעל עד שהשיעור המחושב מתיישב עם המומלץ.
+        השתמש בכלי העזר למטה כדי לבחון את שיעור ההיוון המתאים לנכס שלך לפי מיקומו -
+        ואז התאם - אם תרצה לעשות זאת - את <strong className="text-gray-600">פרמיית הסיכון</strong> בבלוק Build-up שמעל עד שהשיעור המחושב מתיישב עם המומלץ.
       </p>
 
       <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 flex flex-col gap-4">
-        <p className="text-xs font-semibold text-gray-700">עוגן שיעור היוון — לפי ריבית פריים ומעגל ביקוש</p>
+        <p className="text-xs font-semibold text-gray-700">עוגן שיעור היוון - לפי ריבית פריים ומעגל ביקוש</p>
 
         {/* שדה פריים */}
         <div className="flex items-center justify-between gap-3">
@@ -176,9 +176,9 @@ export function Step3Rent({ values, onChange }: Props) {
               <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-gray-200 text-gray-500 text-xs cursor-help font-bold leading-none">?</span>
               <div className="absolute right-0 bottom-6 w-64 bg-gray-900 text-white text-xs rounded-lg p-3 hidden group-hover:block z-10 shadow-xl leading-relaxed">
                 <p className="font-semibold mb-1">מעגלי ביקוש בשוק הנדל״ן:</p>
-                <p className="mb-0.5"><span className="text-blue-300">מעגל א׳</span> — תל אביב</p>
-                <p className="mb-0.5"><span className="text-blue-300">מעגל ב׳</span> — ערי הלוויין של תל אביב</p>
-                <p><span className="text-blue-300">מעגל ג׳</span> — פריפריה ופריפריה רחוקה</p>
+                <p className="mb-0.5"><span className="text-blue-300">מעגל א׳</span> - תל אביב</p>
+                <p className="mb-0.5"><span className="text-blue-300">מעגל ב׳</span> - ערי הלוויין של תל אביב</p>
+                <p><span className="text-blue-300">מעגל ג׳</span> - פריפריה ופריפריה רחוקה</p>
               </div>
             </div>
           </div>
@@ -217,7 +217,7 @@ export function Step3Rent({ values, onChange }: Props) {
           </div>
         )}
 
-        {/* שיעור היוון מחושב — תמיד גלוי */}
+        {/* שיעור היוון מחושב - תמיד גלוי */}
         <div className={`flex justify-between items-center text-xs px-3 py-2 rounded-lg
           ${yCapModel < minAllRings ? "bg-red-50" : "bg-gray-100"}`}>
           <span className="text-gray-500">שיעור היוון מחושב מהפרמטרים שלך</span>
@@ -229,7 +229,7 @@ export function Step3Rent({ values, onChange }: Props) {
           </div>
         )}
 
-        {/* תוצאת עוגן — מופיע רק אחרי בחירת מעגל */}
+        {/* תוצאת עוגן - מופיע רק אחרי בחירת מעגל */}
         {ring !== null && (
           <div className="flex justify-between items-center bg-blue-50 border border-blue-200 px-4 py-3 rounded-xl">
             <div className="text-xs text-blue-600">
@@ -238,7 +238,7 @@ export function Step3Rent({ values, onChange }: Props) {
             <div className="text-right">
               <div className="text-xs text-blue-600 font-medium">שיעור היוון מומלץ</div>
               <div className="text-xl font-bold text-blue-800">
-                {prime ? (prime + spread).toFixed(2) : "—"}%
+                {prime ? (prime + spread).toFixed(2) : "-"}%
               </div>
             </div>
           </div>
@@ -247,7 +247,7 @@ export function Step3Rent({ values, onChange }: Props) {
 
       <Input
         label="הכנסה שנתית פנויה חציונית באזור"
-        hint="לחישוב מדד PIR — נתון מהלמ״ס"
+        hint="לחישוב מדד PIR - נתון מהלמ״ס"
         unit="₪"
         type="number"
         value={values.medianAnnualIncome ?? ""}

@@ -4,11 +4,6 @@ import type { ReportTier } from "./stripe";
 const isSupabaseConfigured = () =>
   (process.env.NEXT_PUBLIC_SUPABASE_URL ?? "").startsWith("http");
 
-function generateToken(): string {
-  return Math.random().toString(36).slice(2, 10) +
-         Math.random().toString(36).slice(2, 10);
-}
-
 export interface SaveReportParams {
   tier: ReportTier;
   city: string;
@@ -30,70 +25,25 @@ export interface SaveReportParams {
   phone?: string;
 }
 
-export async function saveReport(params: SaveReportParams): Promise<string> {
-  // במצב פיתוח ללא Supabase — מחזיר ID מדומה
-  if (!isSupabaseConfigured()) {
-    return "demo-" + generateToken();
+export async function createCheckout(
+  report: SaveReportParams,
+  idempotencyKey: string
+): Promise<string> {
+  if (!isSupabaseConfigured()) throw new Error("Supabase is not configured");
+  const { data, error } = await supabase.functions.invoke("create-checkout", {
+    body: { report, idempotencyKey },
+  });
+  if (error || typeof data?.checkoutUrl !== "string") {
+    throw error ?? new Error("Checkout creation failed");
   }
-
-  const { data: { user } } = await supabase.auth.getUser();
-
-  const shareToken = generateToken();
-
-  const { data, error } = await supabase
-    .from("reports")
-    .insert({
-      user_id: user?.id ?? null,
-      tier: params.tier,
-      city: params.city,
-      rooms: params.rooms,
-      market_price: params.marketPrice,
-      paff: params.paff,
-      v_rent: params.vRent,
-      v_cost: params.vcost,
-      v_econ: params.vEcon ?? null,
-      price_premium_pct: params.pricePremiumPct,
-      pir: params.pir,
-      hai: params.hai,
-      dsti: params.dsti,
-      uch_annual: params.uchAnnual,
-      rent_annual: params.rentAnnual,
-      inputs_json: params.inputsJson,
-      share_token: shareToken,
-      paid: false,
-      stripe_session_id: null,
-      customer_name: params.name ?? null,
-      customer_email: params.email ?? null,
-      customer_phone: params.phone ?? null,
-    })
-    .select("id")
-    .single();
-
-  if (error) throw error;
-  return data.id as string;
-}
-
-export async function markReportPaid(
-  reportId: string,
-  stripeSessionId: string
-): Promise<void> {
-  const { error } = await supabase
-    .from("reports")
-    .update({ paid: true, stripe_session_id: stripeSessionId })
-    .eq("id", reportId);
-
-  if (error) throw error;
+  return data.checkoutUrl;
 }
 
 export async function getReportByToken(token: string): Promise<ReportRow | null> {
-  const { data, error } = await supabase
-    .from("reports")
-    .select("*")
-    .eq("share_token", token)
-    .single();
+  const { data, error } = await supabase.rpc("get_paid_report_by_token", { p_token: token });
 
-  if (error) return null;
-  return data as ReportRow;
+  if (error || !Array.isArray(data) || !data[0]) return null;
+  return data[0] as ReportRow;
 }
 
 export async function getReportById(id: string): Promise<ReportRow | null> {

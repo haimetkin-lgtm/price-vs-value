@@ -1,3 +1,6 @@
+-- LEGACY BASELINE ONLY — DO NOT APPLY TO PRODUCTION.
+-- The policies below are intentionally superseded by
+-- migrations/20260830_secure_payment_state.sql.
 -- מחיר מול שווי — Supabase schema
 -- הרץ ב: Supabase Dashboard → SQL Editor → New query
 

@@ -1,12 +1,13 @@
 ﻿"use client";
 import { useState } from "react";
+import { FAQ_ITEMS } from "@/lib/content";
 
 const GLOSSARY = [
-  { term: "שווי פונדמנטלי", full: "Fundamental Value", desc: "השווי הכלכלי של נכס, שווי בר-קיימא הנגזר מגורמי היסוד המפורטים מטה: יכולת מימון, הכנסה משכירות ועלות ייצור. בניגוד למחיר שוק בלבד." },
+  { term: "שווי פונדמנטלי", full: "Fundamental Value", desc: "שווי הנגזר מעוגני יכולת מימון, הכנסה משכירות ועלות ייצור. ההפרש בינו לבין מחיר השוק הוא מדד לגודל בועת המחיר בדירה." },
   { term: "Paff", full: "Price Affordability", desc: "המחיר המרבי שניתן לממן באופן סביר. מחושב על בסיס ההכנסה החודשית נטו, ההון העצמי, ההתחייבויות הקיימות ותנאי המשכנתא שהוזנו." },
   { term: "Vrent", full: "Value by Rent", desc: "שווי הנכס לפי השכירות שהוא מניב. מהוון לפי ריבית חסרת סיכון, פרמיית סיכון וצמיחת שכ\"ד. ככל שהמחיר גבוה יותר מ-Vrent, כך תשואת השכירות נמוכה יותר." },
   { term: "Vcost", full: "Value by Cost", desc: "אינדיקציה לעלות הקמת דירה דומה מאפס. בנייה, קרקע, פיתוח ורווח יזמי. מחיר הגבוה משמעותית מ-Vcost מחייב הסבר כלכלי: מיקום, זכויות, מחסור או איכות." },
-  { term: "Vecon (DCF)", full: "Value by Discounted Cash Flow", desc: "שווי הנכס לפי היוון תזרים מזומנים (DCF) על פני 10 שנות אחזקה. מחשב את הערך הנוכחי של שתי מרכיבות: (1) סך ההכנסות משכירות נטו בשנים 1–10, כשכל שנה מהוונת לפי שיעור ההיוון הנומינלי; (2) שווי שיורי — ערך הנכס בסוף שנה 10, המחושב כ: NOI של שנה 11 ÷ yCap, ומהוון להיום. דוגמה מספרית: NOI שנה 1 = 90,000 ₪, צמיחה שנתית 3.5%, שיעור היוון 6.5% — סך היוון שנים 1–10 ≈ 660,000 ₪; NOI שנה 11 ≈ 127,000 ₪, שווי שיורי עתידי = 127,000 ÷ 6.5% ≈ 1,950,000 ₪, מהוון להיום ≈ 1,040,000 ₪. Vecon ≈ 1,700,000 ₪. הגישה המקצועית ביותר — שואלת כמה שווה הנכס כ\"מכונת הכנסה\" לטווח ארוך." },
+  { term: "Vecon (DCF)", full: "Value by Discounted Cash Flow", desc: "תרחיש היוון תזרים מזומנים לעשר שנות אחזקה הכולל הכנסות שכירות וערך שיורי. הוא משמש לבדיקת רגישות ארוכת טווח; כאשר ההנחות זהות למודל Vrent, אין לראות בו עוגן עצמאי נוסף." },
   { term: "PIR", full: "Price-to-Income Ratio", desc: "כמה שנות הכנסה שנתית נדרשות לרכישת דירה. ככל שהיחס גבוה יותר ביחס לעבר ולאזורים דומים, רמת הנגישות נמוכה יותר." },
   { term: "HAI", full: "Housing Affordability Index", desc: "האם הכנסת משק הבית הממוצע מספיקה לעמוד בתשלומי המשכנתא. מעל 100 נגיש, מתחת 100 לא נגיש." },
   { term: "DSTI", full: "Debt Service-to-Income", desc: "אחוז ההכנסה החודשית המופנה להחזר חובות (משכנתא + הלוואות). רף שמרני מומלץ במערכת: עד 35%. בנק ישראל אוסר בדרך כלל שיעור החזר העולה על 50%, ומחמיר את דרישות ההון מעל 40%." },
@@ -41,7 +42,6 @@ function GlossaryAccordion() {
     </div>
   );
 }
-import { useRouter } from "next/navigation";
 import { StepIndicator } from "@/components/ui/StepIndicator";
 import { Paywall } from "@/components/Paywall";
 import { Step1Property } from "@/components/forms/Step1Property";
@@ -50,7 +50,7 @@ import { Step3Rent } from "@/components/forms/Step3Rent";
 import { Step4Cost } from "@/components/forms/Step4Cost";
 import { Step5Assumptions } from "@/components/forms/Step5Assumptions";
 import {
-  calcPaff, calcVrent, calcVecon, calcUch, calcVcost, calcTriangulation, calcAccessibility,
+  tryCalculateAnalysis,
   type AllInputs,
 } from "@/lib/models";
 
@@ -104,36 +104,7 @@ function fmtPct(n: number) {
   return (n >= 0 ? "+" : "") + n.toFixed(1) + "%";
 }
 
-// מוצג באתר ומשוקף ב-JSON-LD שב-layout (FAQPage). שינוי כאן מחייב עדכון גם שם.
-const FAQ_ITEMS: { q: string; a: string }[] = [
-  {
-    q: "איך בודקים אם מחיר של דירה מוצדק?",
-    a: "מחיר מוצדק נבחן מול שווי כלכלי, ולא מול מחירי עסקאות בלבד. הכלי בודק את הדירה לפי שלושה עוגנים: יכולת מימון של משק בית (מדדי PIR, HAI ו-DSTI), הכנסה משכירות (תשואה ומכפיל), ועלות ייצור (קרקע, בנייה, מיסים ורווח יזמי). פער גדול בין המחיר לשווי הכלכלי מצביע על תמחור חריג.",
-  },
-  {
-    q: "מה ההבדל בין מחיר דירה לשווי דירה?",
-    a: "מחיר הוא נתון: הסכום שסוכם בעסקה. שווי הוא מסקנה כלכלית: המחיר הראוי לאחר בחינת הגורמים הכלכליים שעומדים בבסיס העסקה. שני מספרים שונים לחלוטין, ואי אפשר להסתמך על עסקאות בלבד כדי להסיק מהו השווי האמיתי של הנכס.",
-  },
-  {
-    q: "מה זה מדד PIR ומה הוא אומר על מחיר הדירה?",
-    a: "PIR (Price to Income Ratio) הוא היחס בין מחיר הדירה להכנסה השנתית של משק הבית. הוא מודד כמה שנות הכנסה נדרשות לרכישת הדירה, ומשמש להערכת נגישות הדיור. ככל שהיחס גבוה יותר, כך המחיר רחוק יותר מיכולת המימון הריאלית של הרוכשים.",
-  },
-  {
-    q: "האם כדאי לקנות דירה עכשיו או להמשיך לשכור?",
-    a: "התשובה תלויה ביחס בין עלות המשכנתא החודשית לדמי השכירות באותו נכס, בתשואה משכירות, בהון העצמי ובאופק ההחזקה. הכלי כולל מבחן כדאיות שכירות מול רכישה שמשווה בין המסלולים בנתונים שלכם.",
-  },
-  {
-    q: "מהי משכנתא עודפת ואיך מזהים אותה?",
-    a: "משכנתא עודפת היא הלוואה שניתנה על בסיס מחיר נכס גבוה מהמחיר הכלכלי הריאלי שלו. כאשר ניתוח מצביע על פער משמעותי בין המחיר ששולם למחיר הכלכלי, ניתן להזמין דוח שמאות מפורט המתאים להליכים משפטיים.",
-  },
-  {
-    q: "כמה עולה בדיקת שווי דירה בכלי?",
-    a: "החישוב הראשוני והתצוגה החיה ניתנים ללא עלות. דוח ניתוח ממוקד עולה 18 ₪ ודוח ניתוח מורחב 49 ₪. תשלום חד פעמי, ללא מנוי.",
-  },
-];
-
 export default function Home() {
-  const router = useRouter();
   const [step, setStep] = useState(0);
   const [inputs, setInputs] = useState<Partial<AllInputs>>(DEFAULTS);
   const [showPaywall, setShowPaywall] = useState(false);
@@ -158,77 +129,24 @@ export default function Home() {
   const missingFields = stepRequired[step]?.filter(r => !inputs[r.field]) ?? [];
   const canProceed = missingFields.length === 0;
 
-  let results: ReturnType<typeof calcTriangulation> | null = null;
-  let uchResult: ReturnType<typeof calcUch> | null = null;
-  let accessResult: ReturnType<typeof calcAccessibility> | null = null;
-  let veconResult: ReturnType<typeof calcVecon> | null = null;
-
-  if (canCalc) {
-    const paffRes = calcPaff({
-      yNet: inputs.yNet!, theta: inputs.theta!, d: inputs.existingDebts ?? 0,
-      o: inputs.fixedHousingCosts ?? 0, rNominal: inputs.rNominal ?? 0.048,
-      n: inputs.nMonths!, equity: inputs.equity!, ltvMax: inputs.ltvMax!,
-    });
-
-    const vrentRes = calcVrent({
-      rentMonthly: inputs.rentMonthly!, vacancyRate: inputs.vacancyRate!,
-      expensesOpex: inputs.expensesOpex ?? 0, rfNominal: inputs.rfNominal!,
-      inflation: inputs.inflation!, riskPremium: inputs.riskPremium!, g: inputs.rentGrowth!,
-    });
-
-    const area = inputs.area ?? 100;
-    const vcostRes = calcVcost({
-      hardCosts: inputs.hardCosts!, indirectConstructionCosts: inputs.indirectCosts ?? 0,
-      softCosts: inputs.softCosts ?? 0, financeCosts: inputs.financeCosts ?? 0,
-      taxes: inputs.constructionTaxes ?? 0, marketing: inputs.marketing ?? 0,
-      contingency: inputs.contingency ?? 0, profitMargin: inputs.profitMargin!,
-      completedValuePerSqm: inputs.marketPrice! / area,
-      sqm: area, landMarketValuePerSqm: inputs.landMarketValuePerSqm ?? 0,
-    });
-
-    veconResult = calcVecon({
-      rentMonthly: inputs.rentMonthly!, vacancyRate: inputs.vacancyRate!,
-      expensesOpex: inputs.expensesOpex ?? 0, rfNominal: inputs.rfNominal!,
-      inflation: inputs.inflation!, riskPremium: inputs.riskPremium!, g: inputs.rentGrowth!,
-    });
-
-    results = calcTriangulation({
-      paff: paffRes.paff, vRent: vrentRes.vRent,
-      vcost: vcostRes.vcost, marketPrice: inputs.marketPrice!,
-      weights: { wPaff: inputs.wPaff ?? 33, wRent: inputs.wRent ?? 33, wCost: inputs.wCost ?? 34 },
-    });
-
-    uchResult = calcUch({
-      price: inputs.marketPrice!, rd: inputs.rdReal!, re: inputs.reReal!,
-      w: inputs.equityRatio!, tauO: inputs.taxRate!, m: inputs.maintenanceRate!,
-      d: inputs.depreciationRate!, rho: inputs.rhoPremium!, eDeltaP: inputs.eDeltaP!,
-      rentAnnual: inputs.rentMonthly! * 12,
-    });
-
-    const rNominal = inputs.rNominal ?? 0.048;
-    const rm = rNominal / 12;
-    const loanAmount = inputs.marketPrice! * inputs.ltvMax!;
-    const annFactor = (1 - Math.pow(1 + rm, -(inputs.nMonths!))) / rm;
-    const monthlyMortgage = loanAmount / annFactor;
-
-    accessResult = calcAccessibility({
-      marketPrice: inputs.marketPrice!, medianAnnualIncome: inputs.medianAnnualIncome ?? 200000,
-      monthlyNetIncome: inputs.yNet!, monthlyDebtService: monthlyMortgage + (inputs.existingDebts ?? 0),
-      ltvMax: inputs.ltvMax!, rNominal, nMonths: inputs.nMonths!,
-      noiAnnual: vrentRes.noiAnnual, annualDebtService: monthlyMortgage * 12,
-      equityInvested: inputs.equity!,
-    });
-  }
+  const calculation = canCalc ? tryCalculateAnalysis(inputs) : { data: null, error: null };
+  const analysis = calculation.data;
+  const results = analysis?.triangulation ?? null;
+  const uchResult = analysis?.uch ?? null;
+  const accessResult = analysis?.accessibility ?? null;
+  const veconResult = analysis?.vecon ?? null;
 
   const statusColor = !results ? "text-gray-400"
     : results.status === "overpriced" ? "text-red-600"
     : results.status === "underpriced" ? "text-green-600"
+    : results.status === "inconclusive" ? "text-gray-600"
     : "text-amber-600";
 
-  const statusLabel = !results ? "—"
-    : results.status === "overpriced" ? "יקר מהשווי"
-    : results.status === "underpriced" ? "זול מהשווי"
-    : "תמחור הוגן";
+  const statusLabel = !results ? "-"
+    : results.status === "overpriced" ? "פרמיה מעל העוגנים"
+    : results.status === "underpriced" ? "מתחת לעוגנים"
+    : results.status === "inconclusive" ? "פער לא מכריע"
+    : "בתחום העוגנים";
 
   const paywallParams = canCalc && results && uchResult && accessResult ? {
     tier: "standard" as const,
@@ -245,7 +163,12 @@ export default function Home() {
     dsti: accessResult.dsti,
     uchAnnual: Math.round(uchResult.uchAnnual),
     rentAnnual: Math.round(uchResult.rentAnnual),
-    inputsJson: inputs as Record<string, unknown>,
+    inputsJson: { ...inputs, analysisSnapshot: {
+      vL: results.vL, vU: results.vU, vStar: results.vStar,
+      pricePremiumPct: results.pricePremiumPct, status: results.status,
+      dispersionPct: results.dispersionPct, confidence: results.confidence,
+      modelValues: results.modelValues, deviations: results.deviations,
+    }} as Record<string, unknown>,
   } : null;
 
   return (
@@ -258,13 +181,13 @@ export default function Home() {
         {/* Hero */}
         <div className="text-center mb-8 pt-2">
           <p className="text-xs font-medium tracking-widest text-amber-500 uppercase mb-3">
-            Real Estate Valuation Tool
+            Price vs Value · Bubble Indicator
           </p>
           <h1 className="text-3xl font-bold text-gray-900 leading-snug">
-            האם שילמת את המחיר הנכון?
+            מה גודל הבועה במחיר הדירה?
           </h1>
           <p className="text-base text-gray-500 mt-2">
-            ניתוח רב-מדדי מבוסס שלושה עוגנים כלכליים: יכולת מימון · הכנסה משכירות · עלות ייצור
+            מודדים את הפער בין מחיר השוק לשווי הפונדמנטלי
           </p>
           <div className="flex justify-center gap-6 mt-5 text-xs text-gray-400">
             <span className="flex items-center gap-1.5">
@@ -308,6 +231,8 @@ export default function Home() {
             <p className="text-center text-sm text-gray-400 py-2">
               מלא את השדות הנדרשים כדי לראות חישוב חי
             </p>
+          ) : calculation.error ? (
+            <p className="text-center text-sm text-red-600 py-2">לא ניתן לחשב: בדוק שהערכים חיוביים ובטווח תקין.</p>
           ) : results && (
             <>
               <div className="grid grid-cols-3 gap-4 text-center">
@@ -322,11 +247,14 @@ export default function Home() {
                   </div>
                 </div>
                 <div>
-                  <div className="text-xs text-gray-400 mb-1">פרמיית מחיר</div>
+                  <div className="text-xs text-gray-400 mb-1">פער מחיר מול שווי · מדד הבועה</div>
                   <div className={`text-lg font-semibold ${statusColor}`}>
                     {fmtPct(results.pricePremiumPct)}
                   </div>
                   <div className={`text-xs font-medium ${statusColor}`}>{statusLabel}</div>
+                  <div className="text-xs text-gray-400 mt-0.5">
+                    פיזור {results.dispersionPct.toFixed(0)}% · אמינות {results.confidence === "high" ? "גבוהה" : results.confidence === "medium" ? "בינונית" : "נמוכה"}
+                  </div>
                 </div>
               </div>
 
@@ -424,7 +352,7 @@ export default function Home() {
                 className="px-6 py-2 text-sm rounded-lg bg-green-600 text-white
                   hover:bg-green-700 transition-colors font-medium disabled:opacity-40"
               >
-                הפק דוח — ₪18
+                הפק דוח, ₪18
               </button>
             )}
           </div>
@@ -499,22 +427,20 @@ export default function Home() {
       {/* טקסט מקצועי */}
       <section className="w-full max-w-2xl mb-12 text-xs text-gray-400 leading-relaxed">
         <h2 className="text-sm font-semibold text-gray-500 mb-2">
-          על הכלי: בדיקת שווי דירה מול מחיר השוק
+          על הכלי: מדד לגודל בועת המחיר בדירה
         </h2>
         <p className="mb-2">
-          PriceVsValue הוא כלי לניתוח כלכלי של מחיר דירה, שנועד לענות על השאלה שכל רוכש שואל
-          לפני חתימה על חוזה: האם המחיר מוצדק. בעוד שהערכת שווי מקובלת נשענת על השוואת עסקאות,
-          הכלי בוחן את הדירה מול שלושה עוגנים כלכליים בלתי תלויים: יכולת המימון של משק הבית
-          (מדדי נגישות דיור PIR, HAI ו-DSTI), ההכנסה הצפויה משכירות (תשואה ומכפיל שכירות),
-          ועלות הייצור של הדירה (קרקע, בנייה, מיסים, מימון ורווח יזמי).
+          PriceVsValue מודד את גודל בועת המחיר בדירה: ההפרש הכספי והאחוזי בין מחיר השוק לבין
+          השווי הפונדמנטלי. השווי מושווה לשלושה עוגנים כלכליים משלימים: יכולת
+          המימון של משק הבית (PIR, HAI ו-DSTI), ההכנסה הצפויה משכירות ועלות הייצור של הדירה.
+          השקלול מציג את פער המחיר והשווי, טווח העוגנים ורמת ההסכמה ביניהם.
         </p>
         <p>
-          הכלי מיועד לרוכשי דירות, למשקיעים, לשמאים ולעורכי דין המבקשים בדיקה מהירה לפני עסקה,
-          לפני נטילת משכנתא או לצורך בחינת תמחור חריג ומשכנתא עודפת. הוא מבוסס על התזה
-          המחקרית של הספר <span className="text-gray-500">בועת נדל״ן</span> מאת חיים אטקין,
-          שמאי מקרקעין ואנליסט נדל״ן. הכלי מיועד לדירות מגורים ואינו מתאים לנכסים מיוחדים,
-          לדירות יוקרה, לווילות, לאחוזות או לנחלות. אין באמור תחליף לשומת מקרקעין פרטנית
-          או לייעוץ מקצועי אישי.
+          פער חיובי מבטא את רכיב הבועה במחיר, כלומר החלק העולה על השווי הפונדמנטלי; פער שלילי מצביע
+          על מחיר הנמוך ממנו. הצטברות פערים דומים בנכסים רבים מאפשרת לאמוד את גודל הבועה בשוק.
+          הכלי מבוסס על הגישה המחקרית של הספר
+          <span className="text-gray-500"> בועת נדל״ן</span> מאת חיים אטקין, והוא אינו תחליף
+          לשומת מקרקעין, לייעוץ השקעות או לבדיקה משפטית והנדסית.
         </p>
       </section>
     </main>

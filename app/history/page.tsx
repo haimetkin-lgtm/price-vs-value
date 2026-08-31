@@ -88,7 +88,7 @@ export default function HistoryPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="font-semibold text-gray-900">
-                        {r.city || "—"} · {r.rooms > 0 ? r.rooms + " חדרים" : "—"}
+                        {r.city || "-"} · {r.rooms > 0 ? r.rooms + " חדרים" : "-"}
                       </span>
                       <span className={`text-xs px-2 py-0.5 rounded-full
                         ${r.tier === "appraiser" ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-600"}`}>

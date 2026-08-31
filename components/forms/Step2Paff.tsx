@@ -12,7 +12,7 @@ export function Step2Paff({ values, onChange }: Props) {
   return (
     <div className="flex flex-col gap-5">
       <div>
-        <h2 className="text-lg font-medium text-gray-900 mb-1">מימון ויכולת רכישה — P<sub>aff</sub></h2>
+        <h2 className="text-lg font-medium text-gray-900 mb-1">מימון ויכולת רכישה - P<sub>aff</sub></h2>
         <p className="text-sm text-gray-500">נתוני משק הבית והמשכנתה הצפויה</p>
       </div>
 
@@ -45,9 +45,9 @@ export function Step2Paff({ values, onChange }: Props) {
           className="w-full accent-blue-600"
         />
         <div className="flex justify-between text-xs text-gray-400">
-          <span>25% — שמרני</span>
-          <span>33% — בסיס</span>
-          <span>50% — מקסימום</span>
+          <span>25% - שמרני</span>
+          <span>33% - בסיס</span>
+          <span>50% - מקסימום</span>
         </div>
         <p className="text-xs text-gray-400 mt-0.5">
           בנק ישראל קובע תקרה של 40–50% תלוי בגובה ההכנסה. ברירת המחדל 33% היא הממוצע המקובל.
@@ -57,7 +57,7 @@ export function Step2Paff({ values, onChange }: Props) {
       <div className="grid grid-cols-2 gap-4">
         <Input
           label="חובות חודשיים קיימים"
-          hint="הלוואות, רכב וכד' — לא כולל דיור"
+          hint="הלוואות, רכב וכד' - לא כולל דיור"
           unit="₪"
           type="number"
           value={values.existingDebts ?? ""}
@@ -113,9 +113,9 @@ export function Step2Paff({ values, onChange }: Props) {
           value={String(values.ltvMax ?? "0.75")}
           onChange={e => onChange("ltvMax", Number(e.target.value))}
           options={[
-            { value: "0.75", label: "75% — דירה ראשונה" },
-            { value: "0.70", label: "70% — דירה שנייה" },
-            { value: "0.50", label: "50% — משקיע" },
+            { value: "0.75", label: "75% - דירה ראשונה" },
+            { value: "0.70", label: "70% - דירה שנייה" },
+            { value: "0.50", label: "50% - משקיע" },
           ]}
         />
       </div>

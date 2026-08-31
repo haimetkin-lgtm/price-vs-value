@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { supabase, type ReportRow } from "@/lib/supabase";
@@ -14,11 +14,13 @@ function fmtPct(n: number, decimals = 1) {
   return (n >= 0 ? "+" : "") + n.toFixed(decimals) + "%";
 }
 
-function StatusBadge({ status }: { status: "overpriced" | "fair" | "underpriced" }) {
+type FundamentalStatus = "overpriced" | "within-range" | "underpriced" | "inconclusive";
+function StatusBadge({ status }: { status: FundamentalStatus }) {
   const map = {
-    overpriced: { label: "יקר מהשווי", cls: "bg-red-50 text-red-700 border-red-200" },
-    fair:       { label: "תמחור הוגן", cls: "bg-amber-50 text-amber-700 border-amber-200" },
-    underpriced:{ label: "זול מהשווי", cls: "bg-green-50 text-green-700 border-green-200" },
+    overpriced: { label: "פרמיה מעל העוגנים", cls: "bg-red-50 text-red-700 border-red-200" },
+    "within-range": { label: "בתחום העוגנים", cls: "bg-amber-50 text-amber-700 border-amber-200" },
+    underpriced:{ label: "מתחת לעוגנים", cls: "bg-green-50 text-green-700 border-green-200" },
+    inconclusive:{ label: "פער לא מכריע", cls: "bg-gray-50 text-gray-700 border-gray-200" },
   };
   const { label, cls } = map[status];
   return <span className={`text-xs font-medium px-3 py-1 rounded-full border ${cls}`}>{label}</span>;
@@ -72,50 +74,24 @@ const DEMO_ROW_APPRAISER: ReportRow = {
   inputs_json: { wPaff: 20, wRent: 50, wCost: 30 },
 };
 
-function ReportFromSupabase({ id }: { id: string }) {
+function ReportFromSupabase({ accessToken }: { accessToken: string }) {
   const router = useRouter();
-  const params = useSearchParams();
   const [report, setReport] = useState<ReportRow | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function load() {
-      // אם חזרנו מקארדקום — עדכן paid=true לפני שמביאים את הדוח
-      const fromCardcom = params.get("paid") === "true" || params.get("SuccessIndicator") !== null;
-      if (fromCardcom) {
-        await supabase.from("reports").update({ paid: true }).eq("id", id);
-        if (typeof window !== "undefined" && typeof window.gtag === "function") {
-          window.gtag("event", "purchase", {
-            transaction_id: id,
-            currency: "ILS",
-          });
-        }
-        // שלח מייל ללקוח עם קישור לדוח
-        try {
-          await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/send-report-email`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
-            },
-            body: JSON.stringify({ report_id: id }),
-          });
-        } catch (_) {}
-      }
+      const { data, error } = await supabase.rpc("get_paid_report_by_token", {
+        p_token: accessToken,
+      });
+      const row = Array.isArray(data) ? data[0] : null;
 
-      const { data, error } = await supabase
-        .from("reports")
-        .select("*")
-        .eq("id", id)
-        .eq("paid", true)
-        .single();
-
-      if (error || !data) router.push("/");
-      else setReport(data as ReportRow);
+      if (error || !row) router.push("/");
+      else setReport(row as ReportRow);
       setLoading(false);
     }
     load();
-  }, [id, router, params]);
+  }, [accessToken, router]);
 
   if (loading) return <div className="text-center py-20 text-gray-400">טוען דוח...</div>;
   if (!report) return null;
@@ -155,29 +131,31 @@ function WeightsCard({ inputs }: { inputs: Record<string, unknown> }) {
 }
 
 function ReportView({ report, isDemo }: { report: ReportRow; isDemo: boolean }) {
+  const snapshot = report.inputs_json.analysisSnapshot as {
+    vL?: number; vU?: number; vStar?: number; pricePremiumPct?: number;
+    status?: FundamentalStatus; dispersionPct?: number; confidence?: "high" | "medium" | "low";
+  } | undefined;
   const values = [report.paff, report.v_rent, report.v_cost, ...(report.v_econ ? [report.v_econ] : [])].filter(v => v > 0);
-  const vL = Math.min(...values);
-  const vU = Math.max(...values);
-  const vStar = values.reduce((a, b) => a + b, 0) / values.length;
-  const premium = values.length > 0 ? ((report.market_price - vStar) / vStar) * 100 : report.price_premium_pct;
-  const status: "overpriced" | "fair" | "underpriced" =
-    premium > 5 ? "overpriced" : premium < -5 ? "underpriced" : "fair";
+  const fallbackVStar = values.reduce((a, b) => a + b, 0) / values.length;
+  const vL = Number.isFinite(snapshot?.vL) ? snapshot!.vL! : Math.min(...values);
+  const vU = Number.isFinite(snapshot?.vU) ? snapshot!.vU! : Math.max(...values);
+  const vStar = Number.isFinite(snapshot?.vStar) ? snapshot!.vStar! : fallbackVStar;
+  const premium = Number.isFinite(snapshot?.pricePremiumPct)
+    ? snapshot!.pricePremiumPct! : ((report.market_price - vStar) / vStar) * 100;
+  const status: FundamentalStatus = snapshot?.status
+    ?? (premium > 5 ? "overpriced" : premium < -5 ? "underpriced" : "within-range");
   const premiumColor =
     status === "overpriced" ? "text-red-600" : status === "underpriced" ? "text-green-600" : "text-amber-600";
   const uchDiff = (report.uch_annual - report.rent_annual) / 12;
   const buyIsExpensive = report.uch_annual > report.rent_annual;
   const createdDate = new Date(report.created_at).toLocaleDateString("he-IL", { year: "numeric", month: "long", day: "numeric" });
-  const shareUrl = typeof window !== "undefined"
-    ? `${window.location.origin}/share?token=${report.share_token}`
-    : `/share?token=${report.share_token}`;
-
   return (
     <main className="min-h-screen py-8 px-4">
       <div className="max-w-2xl mx-auto flex flex-col gap-5">
 
         {isDemo && (
           <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-800 text-center">
-            ⚠️ זהו דוח הדגמה בלבד — לדוח אמיתי, <a href="/price-vs-value/" className="underline font-medium">מלא נכס חדש</a>.
+            ⚠️ זהו דוח הדגמה בלבד - לדוח אמיתי, <a href="/price-vs-value/" className="underline font-medium">מלא נכס חדש</a>.
           </div>
         )}
 
@@ -185,7 +163,7 @@ function ReportView({ report, isDemo }: { report: ReportRow; isDemo: boolean }) 
           <div className="bg-green-50 border border-green-200 rounded-xl p-4 flex items-center justify-between gap-4 flex-wrap print:hidden">
             <div className="flex items-center gap-2 text-sm text-green-800">
               <span>✓</span>
-              <span>הדוח שלך מוכן — <strong>מומלץ לשמור עותק PDF</strong> כדי שיהיה לך תמיד נגיש.</span>
+              <span>הדוח שלך מוכן - <strong>מומלץ לשמור עותק PDF</strong> כדי שיהיה לך תמיד נגיש.</span>
             </div>
             <button
               onClick={() => window.print()}
@@ -227,9 +205,14 @@ function ReportView({ report, isDemo }: { report: ReportRow; isDemo: boolean }) 
 
         <Card>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold text-gray-900">ארבעת מודלי השווי הפונדמנטלי</h2>
+            <h2 className="text-sm font-semibold text-gray-900">עוגני השווי הפונדמנטלי</h2>
             <StatusBadge status={status} />
           </div>
+          {Number.isFinite(snapshot?.dispersionPct) && (
+            <p className="text-xs text-gray-500 mb-3">
+              פיזור בין העוגנים: {snapshot!.dispersionPct!.toFixed(1)}% · רמת הסכמה: {snapshot?.confidence === "high" ? "גבוהה" : snapshot?.confidence === "medium" ? "בינונית" : "נמוכה"}
+            </p>
+          )}
           <ModelBar label="Paff" value={report.paff} marketPrice={report.market_price} vL={vL} vU={vU} />
           <ModelBar label="Vrent" value={report.v_rent} marketPrice={report.market_price} vL={vL} vU={vU} />
           <ModelBar label="Vcost" value={report.v_cost} marketPrice={report.market_price} vL={vL} vU={vU} />
@@ -256,7 +239,7 @@ function ReportView({ report, isDemo }: { report: ReportRow; isDemo: boolean }) 
                 color={report.dsti > 35 ? "text-red-600" : "text-amber-600"} />
             </div>
             <div className="border-t border-gray-100 pt-3">
-              <div className="text-xs font-medium text-gray-700 mb-2">מבחן כדאיות — UCH</div>
+              <div className="text-xs font-medium text-gray-700 mb-2">מבחן כדאיות - UCH</div>
               <div className="flex justify-between text-xs py-1.5 border-b border-gray-50">
                 <span className="text-gray-500">עלות שימוש שנתית (UCH)</span>
                 <span className={`font-medium ${buyIsExpensive ? "text-red-600" : "text-green-600"}`}>{fmt(report.uch_annual)}</span>
@@ -290,7 +273,7 @@ function ReportView({ report, isDemo }: { report: ReportRow; isDemo: boolean }) 
               ))}
             </div>
             <div className="mt-3 bg-amber-50 rounded-lg px-3 py-2 text-xs text-amber-700 font-medium text-center">
-              SRI משולב: גבוה — Z ≈ +1.84
+              SRI משולב: גבוה - Z ≈ +1.84
             </div>
           </Card>
         </div>
@@ -328,14 +311,11 @@ function ReportView({ report, isDemo }: { report: ReportRow; isDemo: boolean }) 
             <div className="text-center flex flex-col gap-3">
               <div>
                 <h2 className="text-sm font-bold text-blue-900">רוצה לדון בממצאים עם שמאי מקרקעין?</h2>
-                <p className="text-xs text-blue-700 mt-1">חיים אטקין, שמאי מקרקעין ואנליסט נדל"ן — ייעוץ אישי על הדוח שלך</p>
+                <p className="text-xs text-blue-700 mt-1">חיים אטקין, שמאי מקרקעין ואנליסט נדל&quot;ן - ייעוץ אישי על הדוח שלך</p>
               </div>
-              <a
-                href={`https://secure.cardcom.solutions/EA/EA5/C10jrrHUkqHEw1uXwjdJw/PaymentSP?SuccessRedirectUrl=${encodeURIComponent(`https://haimetkin-lgtm.github.io/price-vs-value/consult-success?report=${report.id}`)}`}
-                className="inline-block w-full py-3 rounded-xl bg-blue-600 text-white font-semibold text-sm hover:bg-blue-700 transition-colors text-center"
-              >
-                לתיאום ייעוץ — ₪680 →
-              </a>
+              <button disabled className="w-full py-3 rounded-xl bg-gray-300 text-gray-600 font-semibold text-sm cursor-not-allowed">
+                תשלום לייעוץ ייפתח לאחר השלמת אימות מאובטח
+              </button>
               <p className="text-xs text-gray-400">תשלום מאובטח דרך Cardcom · לאחר התשלום תקבל קישור לפנייה ישירה בוואטסאפ</p>
             </div>
           </Card>
@@ -348,15 +328,15 @@ function ReportView({ report, isDemo }: { report: ReportRow; isDemo: boolean }) 
 
 function ReportContent() {
   const params = useSearchParams();
-  const id = params.get("id") ?? "";
-  const isDemo = params.get("demo") === "true" || id.startsWith("demo-");
+  const accessToken = params.get("access_token") ?? "";
+  const isDemo = params.get("demo") !== null;
 
-  if (isDemo || !id) {
+  if (isDemo || !accessToken) {
     const demoReport = params.get("demo") === "appraiser" ? DEMO_ROW_APPRAISER : DEMO_ROW;
     return <ReportView report={demoReport} isDemo={true} />;
   }
 
-  return <ReportFromSupabase id={id} />;
+  return <ReportFromSupabase accessToken={accessToken} />;
 }
 
 export default function ReportPage() {

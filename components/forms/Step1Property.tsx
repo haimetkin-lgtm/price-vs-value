@@ -71,7 +71,7 @@ export function Step1Property({ values, onChange }: Props) {
           <div className="relative group">
             <span className="w-4 h-4 rounded-full bg-gray-200 text-gray-500 text-xs flex items-center justify-center cursor-help leading-none">?</span>
             <div className="absolute bottom-full right-0 mb-1.5 w-56 bg-gray-800 text-white text-xs rounded-lg px-3 py-2 leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 shadow-lg">
-              אם הדירה נרכשה בעבר — הזן נתונים כפי שהיו באותה תקופה (ריבית, שכ"ד, הכנסה). נתוני היום יתנו תוצאה מעוותת.
+              אם הדירה נרכשה בעבר - הזן נתונים כפי שהיו באותה תקופה (ריבית, שכ"ד, הכנסה). נתוני היום יתנו תוצאה מעוותת.
               <div className="absolute top-full right-3 border-4 border-transparent border-t-gray-800"/>
             </div>
           </div>
@@ -85,7 +85,7 @@ export function Step1Property({ values, onChange }: Props) {
         />
         {values.purchaseDate && values.purchaseDate < new Date().toISOString().slice(0, 7) && (
           <div className="bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 text-xs text-amber-800 mt-1">
-            ⚠️ רכישה בעבר — ודא שכל הנתונים בשלבים הבאים (ריבית, שכ"ד, הכנסה) מוזנים כפי שהיו במועד הרכישה.
+            ⚠️ רכישה בעבר - ודא שכל הנתונים בשלבים הבאים (ריבית, שכ"ד, הכנסה) מוזנים כפי שהיו במועד הרכישה.
           </div>
         )}
       </div>

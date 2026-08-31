@@ -5,7 +5,7 @@ export interface AccessibilityInputs {
   medianAnnualIncome: number;   // הכנסה פנויה שנתית חציונית ₪
   monthlyNetIncome: number;     // הכנסת משק הבית הספציפי ₪/חודש
   monthlyDebtService: number;   // שירות חוב חודשי (משכנתה + חובות) ₪
-  ltvMax: number;               // מגבלת LTV
+  loanAmount: number;           // ההלוואה הנדרשת בפועל לאחר ההון העצמי
   rNominal: number;             // ריבית נומינלית שנתית
   nMonths: number;              // תקופה בחודשים
   noiAnnual: number;            // NOI שנתי (לחישוב Cash Carry)
@@ -25,16 +25,21 @@ export interface AccessibilityResult {
 export function calcAccessibility(inputs: AccessibilityInputs): AccessibilityResult {
   const {
     marketPrice, medianAnnualIncome, monthlyNetIncome,
-    monthlyDebtService, ltvMax, rNominal, nMonths,
+    monthlyDebtService, loanAmount, rNominal, nMonths,
     noiAnnual, annualDebtService, equityInvested
   } = inputs;
 
+  if (![marketPrice, medianAnnualIncome, monthlyNetIncome, monthlyDebtService, loanAmount,
+    rNominal, nMonths, noiAnnual, annualDebtService, equityInvested].every(Number.isFinite)
+    || marketPrice <= 0 || medianAnnualIncome <= 0 || monthlyNetIncome <= 0
+    || monthlyDebtService < 0 || loanAmount < 0 || rNominal < 0 || nMonths <= 0) {
+    throw new RangeError("Accessibility inputs are outside their valid ranges");
+  }
   const pir = marketPrice / medianAnnualIncome;
 
   // HAI: הכנסה נדרשת למשכנתה חציונית (30% PTI)
   const rm = rNominal / 12;
-  const loanAmount = marketPrice * ltvMax;
-  const annuityFactor = (1 - Math.pow(1 + rm, -nMonths)) / rm;
+  const annuityFactor = rm === 0 ? nMonths : (1 - Math.pow(1 + rm, -nMonths)) / rm;
   const monthlyMortgage = loanAmount / annuityFactor;
   const incomeRequiredForMedian = monthlyMortgage / 0.30;
   const hai = (monthlyNetIncome / incomeRequiredForMedian) * 100;

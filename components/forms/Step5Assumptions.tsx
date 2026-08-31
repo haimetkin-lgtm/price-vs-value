@@ -12,12 +12,12 @@ export function Step5Assumptions({ values, onChange }: Props) {
   return (
     <div className="flex flex-col gap-5">
       <div>
-        <h2 className="text-lg font-medium text-gray-900 mb-1">הנחות מודל — UCH ומאקרו</h2>
-        <p className="text-sm text-gray-500">הגדרת תרחיש הבסיס — ניתן להשאיר ברירות המחדל</p>
+        <h2 className="text-lg font-medium text-gray-900 mb-1">הנחות מודל - UCH ומאקרו</h2>
+        <p className="text-sm text-gray-500">הגדרת תרחיש הבסיס - ניתן להשאיר ברירות המחדל</p>
       </div>
 
       <div className="bg-gray-50 rounded-lg p-4 flex flex-col gap-4">
-        <p className="text-xs font-medium text-gray-600">עלות הון — מודל UCH</p>
+        <p className="text-xs font-medium text-gray-600">עלות הון - מודל UCH</p>
 
         <div className="grid grid-cols-2 gap-4">
           <Input
@@ -96,13 +96,13 @@ export function Step5Assumptions({ values, onChange }: Props) {
 
       <Select
         label="תרחיש ציפיות עליית ערך E(ΔP)"
-        hint="מניעת מעגליות — נבחר תרחיש ולא ציפיות שוק נוכחיות"
+        hint="מניעת מעגליות - נבחר תרחיש ולא ציפיות שוק נוכחיות"
         value={String(values.eDeltaP ?? "0")}
         onChange={e => onChange("eDeltaP", Number(e.target.value))}
         options={[
-          { value: "0", label: "שמרני — אפס עלייה ריאלית (0%)" },
-          { value: "0.015", label: "בסיס — צמיחה מעוגנת הכנסה (1.5%)" },
-          { value: "-0.02", label: "תיקון מחירים — ירידת ערך ריאלית (−2%)" },
+          { value: "0", label: "שמרני - אפס עלייה ריאלית (0%)" },
+          { value: "0.015", label: "בסיס - צמיחה מעוגנת הכנסה (1.5%)" },
+          { value: "-0.02", label: "תיקון מחירים - ירידת ערך ריאלית (−2%)" },
         ]}
       />
 

@@ -3,7 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
 const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
 
-// כשאין env vars (פיתוח מקומי) — יוצרים client דמה שלא קורס
+// כשאין env vars (פיתוח מקומי) - יוצרים client דמה שלא קורס
 const isConfigured = url.startsWith("http");
 
 export const supabase = isConfigured

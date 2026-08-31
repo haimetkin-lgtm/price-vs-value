@@ -1,7 +1,7 @@
 ﻿"use client";
 import { useState } from "react";
-import { redirectToStripePayment, TIER_CONFIG, type ReportTier } from "@/lib/stripe";
-import { saveReport, type SaveReportParams } from "@/lib/reports";
+import { TIER_CONFIG, type ReportTier } from "@/lib/stripe";
+import { createCheckout, type SaveReportParams } from "@/lib/reports";
 
 interface PaywallProps {
   reportParams: SaveReportParams;
@@ -21,9 +21,12 @@ export function Paywall({ reportParams, onCancel }: PaywallProps) {
     setLoading(true);
     setError("");
     try {
-      const reportId = await saveReport({ ...reportParams, tier: selected, name, email, phone });
-      redirectToStripePayment(selected, reportId);
-    } catch (e) {
+      const checkoutUrl = await createCheckout(
+        { ...reportParams, tier: selected, name, email, phone },
+        crypto.randomUUID()
+      );
+      window.location.assign(checkoutUrl);
+    } catch {
       setError("אירעה שגיאה. נסה שוב.");
       setLoading(false);
     }
@@ -34,7 +37,7 @@ export function Paywall({ reportParams, onCancel }: PaywallProps) {
       <div className="bg-white rounded-2xl shadow-xl max-w-sm w-full p-6 flex flex-col gap-5">
         <div className="text-center">
           <h2 className="text-lg font-bold text-gray-900">בחר סוג דוח</h2>
-          <p className="text-sm text-gray-500 mt-1">תשלום חד-פעמי — אין מנוי</p>
+          <p className="text-sm text-gray-500 mt-1">תשלום חד-פעמי, ללא מנוי</p>
         </div>
 
         <div className="flex flex-col gap-3">

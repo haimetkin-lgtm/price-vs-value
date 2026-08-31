@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { StepIndicator } from "@/components/ui/StepIndicator";
 import { Paywall } from "@/components/Paywall";
 import { Step1Property } from "@/components/forms/Step1Property";
@@ -9,7 +8,7 @@ import { Step3Rent } from "@/components/forms/Step3Rent";
 import { Step4Cost } from "@/components/forms/Step4Cost";
 import { Step5Assumptions } from "@/components/forms/Step5Assumptions";
 import {
-  calcPaff, calcVrent, calcUch, calcVcost, calcTriangulation, calcAccessibility,
+  tryCalculateAnalysis,
   type AllInputs,
 } from "@/lib/models";
 
@@ -28,7 +27,7 @@ const DEFAULTS: Partial<AllInputs> = {
   vacancyRate: 0.05,
   rfNominal: 0.04,
   inflation: 0.025,
-  riskPremium: 0.02,
+  riskPremium: 0.04,
   rentGrowth: 0.01,
   rdReal: 0.025,
   reReal: 0.035,
@@ -49,6 +48,10 @@ const DEFAULTS: Partial<AllInputs> = {
   marketing: 1000,
   contingency: 800,
   landMarketValuePerSqm: 8000,
+  wPaff: 33,
+  wRent: 33,
+  wCost: 34,
+  primeRate: 5,
 };
 
 function fmt(n: number) {
@@ -60,7 +63,6 @@ function fmtPct(n: number) {
 }
 
 export default function Home() {
-  const router = useRouter();
   const [step, setStep] = useState(0);
   const [inputs, setInputs] = useState<Partial<AllInputs>>(DEFAULTS);
   const [showPaywall, setShowPaywall] = useState(false);
@@ -74,69 +76,23 @@ export default function Home() {
     inputs.rentMonthly && inputs.hardCosts
   );
 
-  let results: ReturnType<typeof calcTriangulation> | null = null;
-  let uchResult: ReturnType<typeof calcUch> | null = null;
-  let accessResult: ReturnType<typeof calcAccessibility> | null = null;
-
-  if (canCalc) {
-    const paffRes = calcPaff({
-      yNet: inputs.yNet!, theta: inputs.theta!, d: inputs.existingDebts ?? 0,
-      o: inputs.fixedHousingCosts ?? 0, rNominal: inputs.rNominal ?? 0.048,
-      n: inputs.nMonths!, equity: inputs.equity!, ltvMax: inputs.ltvMax!,
-    });
-
-    const vrentRes = calcVrent({
-      rentMonthly: inputs.rentMonthly!, vacancyRate: inputs.vacancyRate!,
-      expensesOpex: inputs.expensesOpex ?? 0, rfNominal: inputs.rfNominal!,
-      inflation: inputs.inflation!, riskPremium: inputs.riskPremium!, g: inputs.rentGrowth!,
-    });
-
-    const area = inputs.area ?? 100;
-    const vcostRes = calcVcost({
-      hardCosts: inputs.hardCosts!, indirectConstructionCosts: inputs.indirectCosts ?? 0,
-      softCosts: inputs.softCosts ?? 0, financeCosts: inputs.financeCosts ?? 0,
-      taxes: inputs.constructionTaxes ?? 0, marketing: inputs.marketing ?? 0,
-      contingency: inputs.contingency ?? 0, profitMargin: inputs.profitMargin!,
-      completedValuePerSqm: inputs.marketPrice! / area,
-      sqm: area, landMarketValuePerSqm: inputs.landMarketValuePerSqm ?? 0,
-    });
-
-    results = calcTriangulation({
-      paff: paffRes.paff, vRent: vrentRes.vRent,
-      vcost: vcostRes.vcost, marketPrice: inputs.marketPrice!,
-    });
-
-    uchResult = calcUch({
-      price: inputs.marketPrice!, rd: inputs.rdReal!, re: inputs.reReal!,
-      w: inputs.equityRatio!, tauO: inputs.taxRate!, m: inputs.maintenanceRate!,
-      d: inputs.depreciationRate!, rho: inputs.rhoPremium!, eDeltaP: inputs.eDeltaP!,
-      rentAnnual: inputs.rentMonthly! * 12,
-    });
-
-    const rNominal = inputs.rNominal ?? 0.048;
-    const rm = rNominal / 12;
-    const loanAmount = inputs.marketPrice! * inputs.ltvMax!;
-    const annFactor = (1 - Math.pow(1 + rm, -(inputs.nMonths!))) / rm;
-    const monthlyMortgage = loanAmount / annFactor;
-
-    accessResult = calcAccessibility({
-      marketPrice: inputs.marketPrice!, medianAnnualIncome: inputs.medianAnnualIncome ?? 200000,
-      monthlyNetIncome: inputs.yNet!, monthlyDebtService: monthlyMortgage + (inputs.existingDebts ?? 0),
-      ltvMax: inputs.ltvMax!, rNominal, nMonths: inputs.nMonths!,
-      noiAnnual: vrentRes.noiAnnual, annualDebtService: monthlyMortgage * 12,
-      equityInvested: inputs.equity!,
-    });
-  }
+  const calculation = canCalc ? tryCalculateAnalysis(inputs) : { data: null, error: null };
+  const analysis = calculation.data;
+  const results = analysis?.triangulation ?? null;
+  const uchResult = analysis?.uch ?? null;
+  const accessResult = analysis?.accessibility ?? null;
 
   const statusColor = !results ? "text-gray-400"
     : results.status === "overpriced" ? "text-red-600"
     : results.status === "underpriced" ? "text-green-600"
+    : results.status === "inconclusive" ? "text-gray-600"
     : "text-amber-600";
 
-  const statusLabel = !results ? "—"
+  const statusLabel = !results ? "-"
     : results.status === "overpriced" ? "יקר מהשווי"
-    : results.status === "underpriced" ? "זול מהשווי"
-    : "תמחור הוגן";
+    : results.status === "underpriced" ? "מתחת לעוגנים"
+    : results.status === "inconclusive" ? "פער לא מכריע"
+    : "בתחום העוגנים";
 
   const paywallParams = canCalc && results && uchResult && accessResult ? {
     tier: "standard" as const,
@@ -152,7 +108,15 @@ export default function Home() {
     dsti: accessResult.dsti,
     uchAnnual: Math.round(uchResult.uchAnnual),
     rentAnnual: Math.round(uchResult.rentAnnual),
-    inputsJson: inputs as Record<string, unknown>,
+    inputsJson: {
+      ...inputs,
+      analysisSnapshot: {
+        vL: results.vL, vU: results.vU, vStar: results.vStar,
+        pricePremiumPct: results.pricePremiumPct, status: results.status,
+        dispersionPct: results.dispersionPct, confidence: results.confidence,
+        modelValues: results.modelValues, deviations: results.deviations,
+      },
+    } as Record<string, unknown>,
   } : null;
 
   return (
@@ -171,7 +135,7 @@ export default function Home() {
             האם שילמת את המחיר הנכון?
           </h1>
           <p className="text-base text-gray-500 mt-2">
-            ניתוח פונדמנטלי מבוסס 3 מודלי שווי — Paff · Vrent · Vcost
+            ניתוח פונדמנטלי מבוסס 3 מודלי שווי: Paff · Vrent · Vcost
           </p>
           <div className="flex justify-center gap-6 mt-5 text-xs text-gray-400">
             <span className="flex items-center gap-1.5">
@@ -196,6 +160,8 @@ export default function Home() {
             <p className="text-center text-sm text-gray-400 py-2">
               מלא את השדות הנדרשים כדי לראות חישוב חי
             </p>
+          ) : calculation.error ? (
+            <p className="text-center text-sm text-red-600 py-2">לא ניתן לחשב: בדוק שהערכים חיוביים ובטווח תקין.</p>
           ) : results && (
             <>
               <div className="grid grid-cols-3 gap-4 text-center">
@@ -215,6 +181,9 @@ export default function Home() {
                     {fmtPct(results.pricePremiumPct)}
                   </div>
                   <div className={`text-xs font-medium ${statusColor}`}>{statusLabel}</div>
+                  <div className="text-xs text-gray-400 mt-0.5">
+                    פיזור {results.dispersionPct.toFixed(0)}% · אמינות {results.confidence === "high" ? "גבוהה" : results.confidence === "medium" ? "בינונית" : "נמוכה"}
+                  </div>
                 </div>
               </div>
 
@@ -310,7 +279,7 @@ export default function Home() {
                 className="px-6 py-2 text-sm rounded-lg bg-green-600 text-white
                   hover:bg-green-700 transition-colors font-medium disabled:opacity-40"
               >
-                הפק דוח — ₪18
+                הפק דוח, ₪18
               </button>
             )}
           </div>

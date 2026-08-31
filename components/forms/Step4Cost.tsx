@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import { useState } from "react";
 import { Input } from "@/components/ui/Input";
 import type { AllInputs } from "@/lib/models";
@@ -60,7 +60,7 @@ export function Step4Cost({ values, onChange }: Props) {
   return (
     <div className="flex flex-col gap-5">
       <div>
-        <h2 className="text-lg font-medium text-gray-900 mb-1">עלות בנייה — V<sub>cost</sub></h2>
+        <h2 className="text-lg font-medium text-gray-900 mb-1">עלות בנייה - V<sub>cost</sub></h2>
         <p className="text-sm text-gray-500">עלויות ייצור הנכס לחישוב ערך קרקע שיורי ופער ספקולטיבי</p>
       </div>
 
@@ -173,7 +173,7 @@ export function Step4Cost({ values, onChange }: Props) {
 
       <div className="grid grid-cols-2 gap-4">
         <Input
-          label="בצ״מ — סיכונים בלתי צפויים"
+          label="בצ״מ - סיכונים בלתי צפויים"
           unit="₪/מ״ר"
           type="number"
           value={values.contingency ?? ""}
@@ -193,7 +193,7 @@ export function Step4Cost({ values, onChange }: Props) {
 
       <Input
         label="מחיר קרקע בשוק (מכרזי רמ״י / עסקאות)"
-        hint="כלל אצבע: פריפריה — 20%-30% ממחיר הדירה, ערי לוויין — 40%-50%, מרכז/תל אביב — 60%-70%"
+        hint="כלל אצבע: פריפריה - 20%-30% ממחיר הדירה, ערי לוויין - 40%-50%, מרכז/תל אביב - 60%-70%"
         unit="₪/מ״ר בנוי"
         type="number"
         value={values.landMarketValuePerSqm ?? ""}

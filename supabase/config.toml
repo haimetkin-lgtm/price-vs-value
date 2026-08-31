@@ -1,0 +1,5 @@
+[functions.cardcom-indicator]
+verify_jwt = false
+
+[functions.send-report-email]
+verify_jwt = true

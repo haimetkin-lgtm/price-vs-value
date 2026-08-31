@@ -5,6 +5,7 @@ export * from "./uch";
 export * from "./vcost";
 export * from "./triangulation";
 export * from "./accessibility";
+export * from "./analysis";
 
 // ממשק מאוחד לכל קלטי הטופס
 export interface AllInputs {
@@ -64,6 +65,6 @@ export interface AllInputs {
   wRent: number;
   wCost: number;
 
-  // ריבית פריים (לעזר — לא משמשת בחישוב, רק לתצוגת המלצה)
+  // ריבית פריים (לעזר - לא משמשת בחישוב, רק לתצוגת המלצה)
   primeRate: number;
 }

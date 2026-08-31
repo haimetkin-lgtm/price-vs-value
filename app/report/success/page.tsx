@@ -1,25 +1,37 @@
 "use client";
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { markReportPaid } from "@/lib/reports";
+import { supabase } from "@/lib/supabase";
 
 function SuccessContent() {
   const params = useSearchParams();
   const router = useRouter();
-  const [status, setStatus] = useState<"loading" | "done" | "error">("loading");
+  const orderId = params.get("order_id");
+  const accessToken = params.get("access_token");
+  const [status, setStatus] = useState<"loading" | "done" | "error">(
+    orderId && accessToken ? "loading" : "error"
+  );
 
   useEffect(() => {
-    const sessionId = params.get("session_id");
-    const reportId = params.get("report_id");
-    if (!sessionId || !reportId) { setStatus("error"); return; }
+    if (!orderId || !accessToken) return;
+    const verifiedAccessToken = accessToken;
 
-    markReportPaid(reportId, sessionId)
-      .then(() => {
-        setStatus("done");
-        setTimeout(() => router.push(`/report/${reportId}`), 2000);
-      })
-      .catch(() => setStatus("error"));
-  }, [params, router]);
+    let cancelled = false;
+    async function waitForVerification() {
+      for (let attempt = 0; attempt < 10 && !cancelled; attempt += 1) {
+        const { data } = await supabase.rpc("get_paid_report_by_token", { p_token: verifiedAccessToken });
+        if (Array.isArray(data) && data.length === 1) {
+          setStatus("done");
+          setTimeout(() => router.push(`/report?access_token=${encodeURIComponent(verifiedAccessToken)}`), 1200);
+          return;
+        }
+        await new Promise(resolve => setTimeout(resolve, 1500));
+      }
+      if (!cancelled) setStatus("error");
+    }
+    void waitForVerification();
+    return () => { cancelled = true; };
+  }, [accessToken, orderId, router]);
 
   return (
     <main className="min-h-screen flex items-center justify-center">
@@ -43,7 +55,7 @@ function SuccessContent() {
             <div className="text-4xl mb-4">❌</div>
             <h1 className="text-xl font-bold text-gray-900 mb-2">משהו השתבש</h1>
             <p className="text-gray-500 text-sm mb-4">
-              אם חויבת — פנה אלינו ונשלח את הדוח ידנית.
+              אם חויבת, פנה אלינו ונשלח את הדוח ידנית.
             </p>
             <button
               onClick={() => router.push("/")}

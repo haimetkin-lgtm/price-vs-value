@@ -18,10 +18,17 @@ export interface PaffResult {
 
 export function calcPaff(inputs: PaffInputs): PaffResult {
   const { yNet, theta, d, o, rNominal, n, equity, ltvMax } = inputs;
+  if (![yNet, theta, d, o, rNominal, n, equity, ltvMax].every(Number.isFinite)) {
+    throw new RangeError("Paff inputs must be finite numbers");
+  }
+  if (yNet < 0 || d < 0 || o < 0 || rNominal < 0 || n <= 0 || equity < 0
+    || theta < 0 || theta > 1 || ltvMax < 0 || ltvMax >= 1) {
+    throw new RangeError("Paff inputs are outside their valid ranges");
+  }
   const rm = rNominal / 12;
 
-  const pmtMax = yNet * theta - d - o;
-  const annuityFactor = (1 - Math.pow(1 + rm, -n)) / rm;
+  const pmtMax = Math.max(0, yNet * theta - d - o);
+  const annuityFactor = rm === 0 ? n : (1 - Math.pow(1 + rm, -n)) / rm;
   const lMax = pmtMax * annuityFactor;
 
   const cashflowLimit = lMax + equity;

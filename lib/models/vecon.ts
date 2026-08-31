@@ -23,7 +23,7 @@ export function calcVecon(inputs: VeconInputs): VeconResult {
   const grossAnnual = rentMonthly * 12;
   const noiYear1 = grossAnnual * (1 - vacancyRate) - expensesOpex;
 
-  // Fisher: ריאלית מנומינלית — זהה ל-Vrent
+  // Fisher: ריאלית מנומינלית - זהה ל-Vrent
   const rf = (1 + rfNominal) / (1 + inflation) - 1;
   const yCap = rf + riskPremium - g;
 

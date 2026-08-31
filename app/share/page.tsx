@@ -61,7 +61,7 @@ function ShareContent() {
       <div className="max-w-2xl mx-auto flex flex-col gap-5">
 
         <div className="text-center border-b border-gray-100 pb-4">
-          <div className="text-xs text-gray-400 mb-1">דוח משותף — לצפייה בלבד</div>
+          <div className="text-xs text-gray-400 mb-1">דוח משותף - לצפייה בלבד</div>
           <h1 className="text-xl font-bold text-gray-900">ניתוח פונדמנטלי: {report.city}</h1>
           <p className="text-sm text-gray-400 mt-1">{report.rooms} חדרים · {createdDate}</p>
         </div>
