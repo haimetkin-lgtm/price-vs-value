@@ -61,11 +61,11 @@ export function Step4Cost({ values, onChange }: Props) {
     <div className="flex flex-col gap-5">
       <div>
         <h2 className="text-lg font-medium text-gray-900 mb-1">עלות בנייה - V<sub>cost</sub></h2>
-        <p className="text-sm text-gray-500">עלויות ייצור הנכס לחישוב ערך קרקע שיורי ופער ספקולטיבי</p>
+        <p className="text-sm text-gray-500">בדיקת עלות וערך קרקע שיורי, המוצגת בנפרד מהשווי הפונדמנטלי המרכזי</p>
       </div>
 
       <div className="bg-amber-50 rounded-lg p-3 text-xs text-amber-700">
-        כל הנתונים הם לפי מ״ר בנוי. ניתן להשתמש בממוצעי שוק של משרד הבינוי אם אין נתון מדויק.
+        כל הנתונים הם לפי מ״ר בנוי. מאחר שמחיר הקרקע בשוק עשוי לכלול תמחור עודף, Vcost אינו נכנס לחישוב גודל הבועה.
       </div>
 
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex flex-col gap-3">

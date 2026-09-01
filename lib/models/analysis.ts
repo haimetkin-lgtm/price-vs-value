@@ -28,7 +28,7 @@ export function calculateAnalysis(inputs: Partial<AllInputs>) {
     inflation: inputs.inflation!, riskPremium: inputs.riskPremium!, g: inputs.rentGrowth! });
   const triangulation = calcTriangulation({ paff: paff.paff, vRent: vrent.vRent,
     vcost: vcost.vcost, marketPrice,
-    weights: { wPaff: inputs.wPaff ?? 33, wRent: inputs.wRent ?? 33, wCost: inputs.wCost ?? 34 } });
+    weights: { wPaff: inputs.wPaff ?? 50, wRent: inputs.wRent ?? 50, wCost: 0 } });
   const uch = calcUch({ price: marketPrice, rd: inputs.rdReal!, re: inputs.reReal!,
     w: inputs.equityRatio!, tauO: inputs.taxRate!, m: inputs.maintenanceRate!,
     d: inputs.depreciationRate!, rho: inputs.rhoPremium!, eDeltaP: inputs.eDeltaP!,

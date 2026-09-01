@@ -23,18 +23,19 @@ test("Paff rejects invalid regulatory ranges", () => {
     rNominal: 0.05, n: 300, equity: 300_000, ltvMax: 1 }), RangeError);
 });
 
-test("triangulation applies user weights", () => {
+test("triangulation applies weights only to independent fundamental anchors", () => {
   const result = calcTriangulation({ paff: 1_000_000, vRent: 2_000_000,
     vcost: 3_000_000, marketPrice: 2_500_000,
-    weights: { wPaff: 0, wRent: 0, wCost: 100 } });
-  assert.equal(result.vStar, 3_000_000);
+    weights: { wPaff: 25, wRent: 75, wCost: 100 } });
+  assert.equal(result.vStar, 1_750_000);
+  assert.equal(result.vU, 2_000_000);
 });
 
-test("triangulation reports low confidence for widely dispersed anchors", () => {
+test("triangulation ignores a distorted Vcost when measuring dispersion", () => {
   const result = calcTriangulation({ paff: 1_000_000, vRent: 2_000_000,
     vcost: 4_000_000, marketPrice: 2_000_000 });
-  assert.equal(result.confidence, "low");
-  assert.equal(result.status, "inconclusive");
+  assert.equal(result.vU, 2_000_000);
+  assert.equal(result.vStar, 1_500_000);
 });
 
 test("triangulation rejects an empty anchor set", () => {

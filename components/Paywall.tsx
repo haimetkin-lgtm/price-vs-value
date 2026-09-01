@@ -46,7 +46,8 @@ export function Paywall({ reportParams, onCancel }: PaywallProps) {
             const isSelected = selected === tier;
             const features = tier === "standard"
               ? [
-                  "3 מודלי שווי: Paff · Vrent · Vcost",
+                  "שני עוגני שווי עצמאיים: Paff · Vrent",
+                  "בדיקת Vcost נפרדת לעלות ולרכיב הקרקע",
                   "מדדי נגישות: PIR · HAI · DSTI",
                   "מבחן כדאיות UCH (שכירות מול רכישה)",
                   "גרף היסטורי 2000–2024",
@@ -55,7 +56,7 @@ export function Paywall({ reportParams, onCancel }: PaywallProps) {
               : [
                   "כל מה שבניתוח הבסיסי +",
                   "מודל אקונומטרי רביעי: Vecon",
-                  "שקלול מותאם אישית של שלושת המודלים",
+                  "שקלול מותאם אישית של Paff ו-Vrent",
                   "PDF מורחב עם פירוט מלא",
                 ];
 

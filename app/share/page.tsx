@@ -46,10 +46,18 @@ function ShareContent() {
     </div>
   );
 
-  const values = [report.paff, report.v_rent, report.v_cost].filter(v => v > 0);
-  const vL = Math.min(...values);
-  const vU = Math.max(...values);
-  const premium = report.price_premium_pct;
+  const values = [report.paff, report.v_rent].filter(v => v > 0);
+  const storedSnapshot = report.inputs_json.analysisSnapshot as {
+    method?: string;
+    vL?: number; vU?: number; vStar?: number; pricePremiumPct?: number;
+  } | undefined;
+  const snapshot = storedSnapshot?.method === "paff-vrent-v2" ? storedSnapshot : undefined;
+  const fallbackVStar = values.reduce((sum, value) => sum + value, 0) / values.length;
+  const vL = Number.isFinite(snapshot?.vL) ? snapshot!.vL! : Math.min(...values);
+  const vU = Number.isFinite(snapshot?.vU) ? snapshot!.vU! : Math.max(...values);
+  const vStar = Number.isFinite(snapshot?.vStar) ? snapshot!.vStar! : fallbackVStar;
+  const premium = Number.isFinite(snapshot?.pricePremiumPct)
+    ? snapshot!.pricePremiumPct! : ((report.market_price - vStar) / vStar) * 100;
   const status = premium > 5 ? "overpriced" : premium < -5 ? "underpriced" : "fair";
   const premiumColor = status === "overpriced" ? "text-red-600" : status === "underpriced" ? "text-green-600" : "text-amber-600";
   const uchDiff = (report.uch_annual - report.rent_annual) / 12;
@@ -73,10 +81,13 @@ function ShareContent() {
         </div>
 
         <div className="bg-white border border-gray-200 rounded-xl p-5">
-          <h2 className="text-sm font-semibold text-gray-900 mb-4">מודלי שווי פונדמנטלי</h2>
+          <h2 className="text-sm font-semibold text-gray-900 mb-4">עוגני שווי פונדמנטלי</h2>
           <ModelBar label="Paff" value={report.paff} marketPrice={report.market_price} vL={vL} vU={vU} />
           <ModelBar label="Vrent" value={report.v_rent} marketPrice={report.market_price} vL={vL} vU={vU} />
-          <ModelBar label="Vcost" value={report.v_cost} marketPrice={report.market_price} vL={vL} vU={vU} />
+          <div className="mt-4 pt-3 border-t border-gray-100">
+            <p className="text-xs font-medium text-gray-600 mb-2">Vcost - בדיקת עלות נפרדת, אינה נכללת בשווי המרכזי</p>
+            <ModelBar label="Vcost" value={report.v_cost} marketPrice={report.market_price} vL={vL} vU={vU} />
+          </div>
           <div className="mt-3 bg-gray-50 rounded-lg px-4 py-3 text-xs text-gray-500 flex items-start gap-2">
             <span>🔒</span>
             <span>המודל האקונומטרי (V<sub>econ</sub>) מוסתר בדוחות משותפים</span>

@@ -1,4 +1,5 @@
-// מניפת אומדנים: קביעת [VL, VU] מתוך שלושת המודלים
+// טווח השווי הפונדמנטלי נקבע מעוגני יכולת המימון והשכירות.
+// Vcost נשמר כאבחון עלות נפרד מפני שמחיר הקרקע בשוק עלול להכיל את הבועה הנמדדת.
 // UCH אינו נכלל כאן - הוא מבחן כדאיות ולא אומדן שווי
 
 export interface TriangulationInputs {
@@ -28,8 +29,7 @@ export function calcTriangulation(inputs: TriangulationInputs): TriangulationRes
   const entries = [
     { key: "paff", value: paff, weight: weights?.wPaff ?? 1 },
     { key: "vRent", value: vRent, weight: weights?.wRent ?? 1 },
-    { key: "vcost", value: vcost, weight: weights?.wCost ?? 1 },
-  ].filter(item => Number.isFinite(item.value) && item.value > 0 && Number.isFinite(item.weight) && item.weight >= 0);
+  ].filter(item => Number.isFinite(item.value) && item.value > 0 && Number.isFinite(item.weight) && item.weight > 0);
   if (entries.length === 0) throw new RangeError("At least one valid fundamental anchor is required");
   const values = entries.map(item => item.value);
   const vL = Math.min(...values);

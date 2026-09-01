@@ -3,10 +3,10 @@ import { useState } from "react";
 import { FAQ_ITEMS } from "@/lib/content";
 
 const GLOSSARY = [
-  { term: "שווי פונדמנטלי", full: "Fundamental Value", desc: "שווי הנגזר מעוגני יכולת מימון, הכנסה משכירות ועלות ייצור. ההפרש בינו לבין מחיר השוק הוא מדד לגודל בועת המחיר בדירה." },
+  { term: "שווי פונדמנטלי", full: "Fundamental Value", desc: "שווי הנגזר מעוגני יכולת המימון וההכנסה משכירות. ההפרש בינו לבין מחיר השוק הוא מדד לגודל בועת המחיר בדירה." },
   { term: "Paff", full: "Price Affordability", desc: "המחיר המרבי שניתן לממן באופן סביר. מחושב על בסיס ההכנסה החודשית נטו, ההון העצמי, ההתחייבויות הקיימות ותנאי המשכנתא שהוזנו." },
   { term: "Vrent", full: "Value by Rent", desc: "שווי הנכס לפי השכירות שהוא מניב. מהוון לפי ריבית חסרת סיכון, פרמיית סיכון וצמיחת שכ\"ד. ככל שהמחיר גבוה יותר מ-Vrent, כך תשואת השכירות נמוכה יותר." },
-  { term: "Vcost", full: "Value by Cost", desc: "אינדיקציה לעלות הקמת דירה דומה מאפס. בנייה, קרקע, פיתוח ורווח יזמי. מחיר הגבוה משמעותית מ-Vcost מחייב הסבר כלכלי: מיקום, זכויות, מחסור או איכות." },
+  { term: "Vcost", full: "Value by Cost", desc: "בדיקת עלות נפרדת הכוללת בנייה, קרקע, פיתוח ורווח יזמי. מכיוון שמחיר הקרקע בשוק עלול כבר לכלול תמחור עודף, Vcost אינו נכלל בשווי המרכזי או במדד גודל הבועה." },
   { term: "Vecon (DCF)", full: "Value by Discounted Cash Flow", desc: "תרחיש היוון תזרים מזומנים לעשר שנות אחזקה הכולל הכנסות שכירות וערך שיורי. הוא משמש לבדיקת רגישות ארוכת טווח; כאשר ההנחות זהות למודל Vrent, אין לראות בו עוגן עצמאי נוסף." },
   { term: "PIR", full: "Price-to-Income Ratio", desc: "כמה שנות הכנסה שנתית נדרשות לרכישת דירה. ככל שהיחס גבוה יותר ביחס לעבר ולאזורים דומים, רמת הנגישות נמוכה יותר." },
   { term: "HAI", full: "Housing Affordability Index", desc: "האם הכנסת משק הבית הממוצע מספיקה לעמוד בתשלומי המשכנתא. מעל 100 נגיש, מתחת 100 לא נגיש." },
@@ -90,9 +90,9 @@ const DEFAULTS: Partial<AllInputs> = {
   marketing: 1000,
   contingency: 800,
   landMarketValuePerSqm: 8000,
-  wPaff: 33,
-  wRent: 33,
-  wCost: 34,
+  wPaff: 50,
+  wRent: 50,
+  wCost: 0,
   primeRate: 5,
 };
 
@@ -163,7 +163,7 @@ export default function Home() {
     dsti: accessResult.dsti,
     uchAnnual: Math.round(uchResult.uchAnnual),
     rentAnnual: Math.round(uchResult.rentAnnual),
-    inputsJson: { ...inputs, analysisSnapshot: {
+    inputsJson: { ...inputs, analysisSnapshot: { method: "paff-vrent-v2",
       vL: results.vL, vU: results.vU, vStar: results.vStar,
       pricePremiumPct: results.pricePremiumPct, status: results.status,
       dispersionPct: results.dispersionPct, confidence: results.confidence,
@@ -431,9 +431,9 @@ export default function Home() {
         </h2>
         <p className="mb-2">
           PriceVsValue מודד את גודל בועת המחיר בדירה: ההפרש הכספי והאחוזי בין מחיר השוק לבין
-          השווי הפונדמנטלי. השווי מושווה לשלושה עוגנים כלכליים משלימים: יכולת
-          המימון של משק הבית (PIR, HAI ו-DSTI), ההכנסה הצפויה משכירות ועלות הייצור של הדירה.
-          השקלול מציג את פער המחיר והשווי, טווח העוגנים ורמת ההסכמה ביניהם.
+          השווי הפונדמנטלי. השווי המרכזי נגזר משני עוגנים עצמאיים: יכולת
+          המימון של משק הבית וההכנסה הצפויה משכירות. עלות הייצור והקרקע מוצגת
+          כבדיקת Vcost נפרדת ואינה מצמצמת את פער המחיר.
         </p>
         <p>
           פער חיובי מבטא את רכיב הבועה במחיר, כלומר החלק העולה על השווי הפונדמנטלי; פער שלילי מצביע

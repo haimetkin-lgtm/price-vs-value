@@ -52,12 +52,12 @@ const DEMO_INPUTS: AllInputs = {
   indirectCosts: 1_500, softCosts: 2_000, financeCosts: 2_500,
   constructionTaxes: 3_000, marketing: 1_000, contingency: 800,
   profitMargin: 0.15, landMarketValuePerSqm: 8_000, medianAnnualIncome: 200_000,
-  wPaff: 33, wRent: 33, wCost: 34, primeRate: 5,
+  wPaff: 50, wRent: 50, wCost: 0, primeRate: 5,
 };
 
 function buildDemoReport(tier: "standard" | "appraiser"): ReportRow {
   const inputs: AllInputs = tier === "appraiser"
-    ? { ...DEMO_INPUTS, wPaff: 20, wRent: 50, wCost: 30 }
+    ? { ...DEMO_INPUTS, wPaff: 35, wRent: 65, wCost: 0 }
     : DEMO_INPUTS;
   const analysis = calculateAnalysis(inputs);
   const result = analysis.triangulation;
@@ -71,7 +71,7 @@ function buildDemoReport(tier: "standard" | "appraiser"): ReportRow {
     price_premium_pct: result.pricePremiumPct, pir: analysis.accessibility.pir,
     hai: analysis.accessibility.hai, dsti: analysis.accessibility.dsti,
     uch_annual: Math.round(analysis.uch.uchAnnual), rent_annual: Math.round(analysis.uch.rentAnnual),
-    inputs_json: { ...inputs, analysisSnapshot: {
+    inputs_json: { ...inputs, analysisSnapshot: { method: "paff-vrent-v2",
       vL: result.vL, vU: result.vU, vStar: result.vStar,
       pricePremiumPct: result.pricePremiumPct, status: result.status,
       dispersionPct: result.dispersionPct, confidence: result.confidence,
@@ -110,14 +110,12 @@ function ReportFromSupabase({ accessToken }: { accessToken: string }) {
 }
 
 function WeightsCard({ inputs }: { inputs: Record<string, unknown> }) {
-  const wPaff = (inputs.wPaff as number) ?? 33;
-  const wRent = (inputs.wRent as number) ?? 33;
-  const wCost = (inputs.wCost as number) ?? 34;
-  const wSum = (wPaff + wRent + wCost) || 1;
+  const wPaff = (inputs.wPaff as number) ?? 50;
+  const wRent = (inputs.wRent as number) ?? 50;
+  const wSum = (wPaff + wRent) || 1;
   const rows = [
     { label: "Paff (יכולת מימון)", w: wPaff },
     { label: "Vrent (הכנסה משכירות)", w: wRent },
-    { label: "Vcost (עלות ייצור)", w: wCost },
   ];
   return (
     <Card>
@@ -136,17 +134,19 @@ function WeightsCard({ inputs }: { inputs: Record<string, unknown> }) {
           );
         })}
       </div>
-      <p className="text-xs text-gray-400 mt-3">השקלול קובע את משקל כל מודל בחישוב V* (נקודת המרכז לחישוב פרמיית המחיר)</p>
+      <p className="text-xs text-gray-400 mt-3">השקלול קובע את משקל שני העוגנים העצמאיים בחישוב השווי המרכזי. Vcost מוצג כאבחון נפרד.</p>
     </Card>
   );
 }
 
 function ReportView({ report, isDemo }: { report: ReportRow; isDemo: boolean }) {
-  const snapshot = report.inputs_json.analysisSnapshot as {
+  const storedSnapshot = report.inputs_json.analysisSnapshot as {
+    method?: string;
     vL?: number; vU?: number; vStar?: number; pricePremiumPct?: number;
     status?: FundamentalStatus; dispersionPct?: number; confidence?: "high" | "medium" | "low";
   } | undefined;
-  const values = [report.paff, report.v_rent, report.v_cost, ...(report.v_econ ? [report.v_econ] : [])].filter(v => v > 0);
+  const snapshot = storedSnapshot?.method === "paff-vrent-v2" ? storedSnapshot : undefined;
+  const values = [report.paff, report.v_rent].filter(v => v > 0);
   const fallbackVStar = values.reduce((a, b) => a + b, 0) / values.length;
   const vL = Number.isFinite(snapshot?.vL) ? snapshot!.vL! : Math.min(...values);
   const vU = Number.isFinite(snapshot?.vU) ? snapshot!.vU! : Math.max(...values);
@@ -226,7 +226,11 @@ function ReportView({ report, isDemo }: { report: ReportRow; isDemo: boolean }) 
           )}
           <ModelBar label="Paff" value={report.paff} marketPrice={report.market_price} vL={vL} vU={vU} />
           <ModelBar label="Vrent" value={report.v_rent} marketPrice={report.market_price} vL={vL} vU={vU} />
-          <ModelBar label="Vcost" value={report.v_cost} marketPrice={report.market_price} vL={vL} vU={vU} />
+          <div className="mt-4 pt-3 border-t border-gray-100">
+            <p className="text-xs font-medium text-gray-600 mb-1">Vcost - בדיקת עלות וקרקע</p>
+            <p className="text-xs text-gray-400 mb-2">כולל מחיר קרקע בשוק ולכן אינו נכלל בשווי המרכזי, בטווח השווי או במדד גודל הבועה.</p>
+            <ModelBar label="Vcost" value={report.v_cost} marketPrice={report.market_price} vL={vL} vU={vU} />
+          </div>
           {report.tier === "standard" ? (
             <div className="mt-3 bg-gray-50 rounded-lg px-4 py-3 text-xs text-gray-500 flex items-start gap-2">
               <span>🔒</span>

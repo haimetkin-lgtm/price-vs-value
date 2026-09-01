@@ -108,19 +108,17 @@ export function Step5Assumptions({ values, onChange }: Props) {
 
       <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 flex flex-col gap-3">
         <div>
-          <p className="text-xs font-semibold text-blue-800">שקלול מודלי השווי</p>
-          <p className="text-xs text-blue-600 mt-0.5">קובע את המשקל של כל מודל בחישוב V* (נקודת המרכז)</p>
+          <p className="text-xs font-semibold text-blue-800">שקלול עוגני השווי הפונדמנטלי</p>
+          <p className="text-xs text-blue-600 mt-0.5">Paff ו-Vrent קובעים את נקודת המרכז. Vcost מוצג בנפרד כאבחון עלות.</p>
         </div>
         {([
           { key: "wPaff" as keyof AllInputs, label: "Paff", sub: "יכולת מימון" },
           { key: "wRent" as keyof AllInputs, label: "Vrent", sub: "הכנסה משכירות" },
-          { key: "wCost" as keyof AllInputs, label: "Vcost", sub: "עלות ייצור" },
         ] as const).map(({ key, label, sub }) => {
-          const wP = (values.wPaff ?? 33);
-          const wR = (values.wRent ?? 33);
-          const wC = (values.wCost ?? 34);
-          const wSum = (wP + wR + wC) || 1;
-          const raw = (values[key] as number | undefined) ?? (key === "wCost" ? 34 : 33);
+          const wP = (values.wPaff ?? 50);
+          const wR = (values.wRent ?? 50);
+          const wSum = (wP + wR) || 1;
+          const raw = (values[key] as number | undefined) ?? 50;
           const pct = Math.round(raw / wSum * 100);
           return (
             <div key={String(key)} className="flex items-center gap-3">

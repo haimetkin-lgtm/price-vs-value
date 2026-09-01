@@ -48,9 +48,9 @@ const DEFAULTS: Partial<AllInputs> = {
   marketing: 1000,
   contingency: 800,
   landMarketValuePerSqm: 8000,
-  wPaff: 33,
-  wRent: 33,
-  wCost: 34,
+  wPaff: 50,
+  wRent: 50,
+  wCost: 0,
   primeRate: 5,
 };
 
@@ -110,7 +110,7 @@ export default function Home() {
     rentAnnual: Math.round(uchResult.rentAnnual),
     inputsJson: {
       ...inputs,
-      analysisSnapshot: {
+      analysisSnapshot: { method: "paff-vrent-v2",
         vL: results.vL, vU: results.vU, vStar: results.vStar,
         pricePremiumPct: results.pricePremiumPct, status: results.status,
         dispersionPct: results.dispersionPct, confidence: results.confidence,
@@ -135,7 +135,7 @@ export default function Home() {
             האם שילמת את המחיר הנכון?
           </h1>
           <p className="text-base text-gray-500 mt-2">
-            ניתוח פונדמנטלי מבוסס 3 מודלי שווי: Paff · Vrent · Vcost
+            שווי פונדמנטלי מבוסס Paff ו-Vrent, לצד בדיקת עלות Vcost נפרדת
           </p>
           <div className="flex justify-center gap-6 mt-5 text-xs text-gray-400">
             <span className="flex items-center gap-1.5">
