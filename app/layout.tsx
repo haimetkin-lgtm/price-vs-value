@@ -140,7 +140,7 @@ const jsonLd = {
 
 function PvLogo() {
   return (
-    <div className="flex items-center gap-2.5">
+    <a href="/price-vs-value/" aria-label="חזרה לדף הבית" className="flex items-center gap-2.5">
       {/* PV Icon */}
       <svg viewBox="0 0 40 40" width="34" height="34" xmlns="http://www.w3.org/2000/svg" style={{direction: "ltr"}}>
         <rect width="40" height="40" rx="7" fill="#1b3a6b"/>
@@ -152,9 +152,9 @@ function PvLogo() {
         <span className="text-sm font-bold tracking-tight text-gray-900">
           Price<span className="text-amber-500">vs</span>Value
         </span>
-        <span className="text-xs text-gray-400">מחיר מול שווי <span className="text-amber-500 font-medium">גרסת ביתא</span></span>
+        <span className="text-xs text-gray-400">מחיר מול שווי</span>
       </div>
-    </div>
+    </a>
   );
 }
 
