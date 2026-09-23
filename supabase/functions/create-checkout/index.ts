@@ -1,6 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const cors = { "access-control-allow-origin": "*", "access-control-allow-headers": "authorization, content-type" };
+const cors = { "access-control-allow-origin": "*", "access-control-allow-headers": "authorization, x-client-info, apikey, content-type" };
 const CARDCOM_CREATE_URL = "https://secure.cardcom.solutions/Interface/LowProfile.aspx";
 const env = (name: string) => { const v = Deno.env.get(name); if (!v) throw new Error(`Missing ${name}`); return v; };
 const hex = (bytes: ArrayBuffer) => [...new Uint8Array(bytes)].map(b => b.toString(16).padStart(2, "0")).join("");
