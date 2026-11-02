@@ -17,6 +17,7 @@ export interface AccessibilityResult {
   pir: number;
   hai: number;
   dsti: number;
+  dscr: number;                 // יחס כיסוי שירות החוב (NOI / שירות חוב שנתי)
   cashOnCash: number;           // תשואה תזרימית על ההון
   cashCarryMonthly: number;     // מרווח נשיאה חודשי (שלילי = גירעון)
   incomeRequiredForMedian: number;
@@ -46,11 +47,13 @@ export function calcAccessibility(inputs: AccessibilityInputs): AccessibilityRes
 
   const dsti = (monthlyDebtService / monthlyNetIncome) * 100;
 
+  const dscr = annualDebtService > 0 ? noiAnnual / annualDebtService : 0;
+
   const cashOnCash = equityInvested > 0
     ? ((noiAnnual - annualDebtService) / equityInvested) * 100
     : 0;
 
   const cashCarryMonthly = (noiAnnual - annualDebtService) / 12;
 
-  return { pir, hai, dsti, cashOnCash, cashCarryMonthly, incomeRequiredForMedian };
+  return { pir, hai, dsti, dscr, cashOnCash, cashCarryMonthly, incomeRequiredForMedian };
 }

@@ -106,6 +106,7 @@ export default function Home() {
     pir: accessResult.pir,
     hai: accessResult.hai,
     dsti: accessResult.dsti,
+    dscr: accessResult.dscr,
     uchAnnual: Math.round(uchResult.uchAnnual),
     rentAnnual: Math.round(uchResult.rentAnnual),
     inputsJson: {
@@ -139,7 +140,7 @@ export default function Home() {
           </p>
           <div className="flex justify-center gap-6 mt-5 text-xs text-gray-400">
             <span className="flex items-center gap-1.5">
-              <span className="text-green-500">✓</span> מדדי נגישות PIR · HAI · DSTI
+              <span className="text-green-500">✓</span> מדדי נגישות PIR · HAI · DSTI · DSCR
             </span>
             <span className="flex items-center gap-1.5">
               <span className="text-green-500">✓</span> מבחן כדאיות שכירות מול רכישה
@@ -209,7 +210,7 @@ export default function Home() {
               )}
 
               {accessResult && (
-                <div className="mt-3 pt-3 border-t border-gray-100 grid grid-cols-3 gap-3 text-center text-xs">
+                <div className="mt-3 pt-3 border-t border-gray-100 grid grid-cols-4 gap-2 text-center text-xs">
                   <div className="text-gray-500">
                     PIR <span className="block text-base font-semibold text-gray-800">{accessResult.pir.toFixed(1)}x</span>
                   </div>
@@ -221,6 +222,11 @@ export default function Home() {
                   <div className="text-gray-500">
                     DSTI <span className={`block text-base font-semibold ${accessResult.dsti > 35 ? "text-red-600" : "text-amber-600"}`}>
                       {accessResult.dsti.toFixed(1)}%
+                    </span>
+                  </div>
+                  <div className="text-gray-500">
+                    DSCR <span className={`block text-base font-semibold ${accessResult.dscr < 1 ? "text-red-600" : accessResult.dscr < 1.2 ? "text-amber-600" : "text-green-600"}`}>
+                      {accessResult.dscr.toFixed(2)}
                     </span>
                   </div>
                 </div>

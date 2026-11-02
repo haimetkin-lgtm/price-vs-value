@@ -27,6 +27,7 @@ export interface ReportRow {
   pir: number;
   hai: number;
   dsti: number;
+  dscr?: number | null;
   uch_annual: number;
   rent_annual: number;
   inputs_json: Record<string, unknown>;

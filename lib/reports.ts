@@ -17,6 +17,7 @@ export interface SaveReportParams {
   pir: number;
   hai: number;
   dsti: number;
+  dscr?: number;
   uchAnnual: number;
   rentAnnual: number;
   inputsJson: Record<string, unknown>;
