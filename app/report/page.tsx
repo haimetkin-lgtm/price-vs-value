@@ -70,6 +70,7 @@ function buildDemoReport(tier: "standard" | "appraiser"): ReportRow {
     v_econ: tier === "appraiser" ? Math.round(analysis.vecon.vEcon) : null,
     price_premium_pct: result.pricePremiumPct, pir: analysis.accessibility.pir,
     hai: analysis.accessibility.hai, dsti: analysis.accessibility.dsti,
+    dscr: analysis.accessibility.dscr,
     uch_annual: Math.round(analysis.uch.uchAnnual), rent_annual: Math.round(analysis.uch.rentAnnual),
     inputs_json: { ...inputs, analysisSnapshot: { method: "paff-vrent-v2",
       vL: result.vL, vU: result.vU, vStar: result.vStar,
@@ -244,7 +245,7 @@ function ReportView({ report, isDemo }: { report: ReportRow; isDemo: boolean }) 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Card>
             <h2 className="text-sm font-semibold text-gray-900 mb-3">נגישות ועומס מימוני</h2>
-            <div className="grid grid-cols-3 gap-2 mb-4">
+            <div className="grid grid-cols-4 gap-2 mb-4">
               <MetricTile label="PIR" value={report.pir.toFixed(1) + "x"} sub="ממוצע OECD: 7x"
                 color={report.pir > 9 ? "text-red-600" : "text-amber-600"} />
               <MetricTile label="HAI" value={report.hai.toFixed(0)}
@@ -252,6 +253,11 @@ function ReportView({ report, isDemo }: { report: ReportRow; isDemo: boolean }) 
                 color={report.hai < 100 ? "text-red-600" : "text-green-600"} />
               <MetricTile label="DSTI" value={report.dsti.toFixed(1) + "%"} sub="רף מומלץ: 35%"
                 color={report.dsti > 35 ? "text-red-600" : "text-amber-600"} />
+              {report.dscr != null && (
+                <MetricTile label="DSCR" value={report.dscr.toFixed(2)}
+                  sub={report.dscr < 1 ? "כשל תזרימי" : report.dscr < 1.2 ? "גבולי" : "בריא"}
+                  color={report.dscr < 1 ? "text-red-600" : report.dscr < 1.2 ? "text-amber-600" : "text-green-600"} />
+              )}
             </div>
             <div className="border-t border-gray-100 pt-3">
               <div className="text-xs font-medium text-gray-700 mb-2">מבחן כדאיות - UCH</div>
